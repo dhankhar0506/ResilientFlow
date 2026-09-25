@@ -18,11 +18,33 @@ Built for students, self-taught developers, and anyone who's tired of "just memo
 
 ---
 
-## 📚 Topic Coverage
+# 🧠 ResilientFlow
 
-The goal of ResilientFlow is to eventually cover the full computer science & software development curriculum — from how a CPU executes an instruction to how a production system scales. Here's where things stand:
+**Learn Computer Science & Software Development visually — not from definitions, but from watching things happen.**
 
-### 🌐 Networking
+ResilientFlow is an interactive learning platform that breaks down how computers and software systems actually work, one step at a time. Instead of walls of text, every topic is a hands-on visual simulation you click through — watch a packet travel across the internet, step through how a browser renders a page, see how a database executes a query.
+
+**Networking is where this project started, not where it ends.** The plan is to build out a full computer science + software development curriculum across five core pillars — **Frontend, Backend, Networking, Operating Systems, and DBMS** — each broken into the same kind of step-by-step visual lessons.
+
+Built for students, self-taught developers, and anyone who's tired of "just memorize it" explanations.
+
+---
+
+## ✨ Features
+
+- 🧩 **Learn by simulation** — step through real processes (DNS lookups, TCP handshakes, HTTP requests, query execution, rendering pipelines) instead of reading static diagrams
+- 🌗 **Light & Dark mode** — full theme toggle, easy on the eyes any time of day
+- 🌐 **English & Hinglish** — every lesson is available in plain English or a casual Hindi-English mix, so explanations feel natural, not textbook-y
+- 📂 **Topic-based sidebar** — browse by subject, drill into sub-topics, jump straight to the concept you're stuck on
+- ⚡ **Fast & lightweight** — built with Vite + React, no bloated backend, runs entirely in the browser
+
+---
+
+## 📚 Curriculum
+
+ResilientFlow is being built around five core pillars of computer science and software development. Networking is the first one being fleshed out in full; the rest are actively being worked on next.
+
+### 🌐 Networking — *in progress*
 | Lesson | Status |
 |---|---|
 | HTTP Request & Response | ✅ Available |
@@ -33,49 +55,45 @@ The goal of ResilientFlow is to eventually cover the full computer science & sof
 | ARP & MAC addressing | 🚧 Planned |
 | IP addressing & subnetting | 🚧 Planned |
 
-### 💻 Computer Fundamentals
+### 🎨 Frontend Development — *planned*
 | Lesson | Status |
 |---|---|
-| Binary, memory & storage | 🚧 Planned |
-| How the CPU executes instructions | 🚧 Planned |
+| How a browser parses & renders a page (HTML → DOM → paint) | 🚧 Planned |
+| The critical rendering path & reflow/repaint | 🚧 Planned |
+| The JavaScript event loop, visually | 🚧 Planned |
+| State management & re-renders (React lifecycle) | 🚧 Planned |
+| Browser storage: cookies vs localStorage vs sessionStorage | 🚧 Planned |
 
-### ⚙️ Operating Systems
+### 🛠️ Backend Development — *planned*
 | Lesson | Status |
 |---|---|
-| Processes & threads | 🚧 Planned |
-| Scheduling & memory management | 🚧 Planned |
-| Filesystems & Linux fundamentals | 🚧 Planned |
+| Anatomy of a REST API request | 🚧 Planned |
+| Authentication & sessions vs tokens (JWT) | 🚧 Planned |
+| Middleware pipelines, step by step | 🚧 Planned |
+| Caching, queues & rate limiting | 🚧 Planned |
+| WebSockets vs polling | 🚧 Planned |
 
-### 🧩 Programming & Runtime
+### ⚙️ Operating Systems — *planned*
 | Lesson | Status |
 |---|---|
-| Compiled vs. interpreted languages | 🚧 Planned |
-| Runtime engines & debugging | 🚧 Planned |
+| Processes vs threads | 🚧 Planned |
+| CPU scheduling algorithms | 🚧 Planned |
+| Memory management & paging | 🚧 Planned |
+| Filesystems, step by step | 🚧 Planned |
+| Deadlocks & synchronization | 🚧 Planned |
 
-### 🕸️ Web & Browser
+### 🗄️ DBMS — *planned*
 | Lesson | Status |
 |---|---|
-| How a browser renders a page | 🚧 Planned |
-| Cookies, sessions & auth | 🚧 Planned |
+| How a query actually executes (parser → optimizer → executor) | 🚧 Planned |
+| Indexes: why they speed things up | 🚧 Planned |
+| Transactions & ACID, visualized | 🚧 Planned |
+| Normalization, step by step | 🚧 Planned |
+| SQL vs NoSQL: when and why | 🚧 Planned |
+| Replication & sharding | 🚧 Planned |
 
-### 🛠️ Backend & APIs
-| Lesson | Status |
-|---|---|
-| REST API design | 🚧 Planned |
-| Queues, caching & WebSockets | 🚧 Planned |
-
-### 🗄️ Databases
-| Lesson | Status |
-|---|---|
-| SQL vs NoSQL | 🚧 Planned |
-| Indexes, transactions & replication | 🚧 Planned |
-
-### ☁️ Cloud & DevOps
-| Lesson | Status |
-|---|---|
-| Docker & containers | 🚧 Planned |
-| CI/CD pipelines | 🚧 Planned |
-| Load balancers & monitoring | 🚧 Planned |
+### 🎁 Bonus topics — *stretch goals*
+Computer fundamentals (binary, CPU execution), cloud & DevOps (Docker, CI/CD, load balancers) — planned once the five core pillars above are further along.
 
 > Have a topic you want prioritized? Open an issue or start a discussion — the roadmap is driven by what learners actually need.
 
