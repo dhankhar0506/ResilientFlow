@@ -1,194 +1,4 @@
-// import { useMemo, useState } from 'react';
-// import {
-//     Accordion,
-//     AccordionDetails,
-//     AccordionSummary,
-//     Alert,
-//     Box,
-//     Chip,
-//     Divider,
-//     Paper,
-//     Stack,
-//     Tab,
-//     Tabs,
-//     Typography,
-// } from '@mui/material';
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import { osiLayers, tcpIpLayers, osiTcpIpMapping, whatsappFlow, type NetworkLayer } from '../data/OSI_TCP_IP';
 
-// const layerColors = ['#64748b', '#0f766e', '#2563eb', '#7c3aed', '#c2410c', '#0891b2', '#4f46e5'];
-
-// function LayerStack({ layers, compact = false }: { layers: NetworkLayer[]; compact?: boolean }) {
-//     return (
-//         <Stack spacing={1}>
-//             {[...layers].reverse().map((layer) => (
-//                 <Paper
-//                     key={`${layer.number}-${layer.name}`}
-//                     variant="outlined"
-//                     sx={{
-//                         p: compact ? 1.2 : 1.8,
-//                         borderLeft: `6px solid ${layerColors[layer.number - 1]}`,
-//                         bgcolor: 'background.paper',
-//                     }}
-//                 >
-//                     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ sm: 'center' }}>
-//                         <Chip size="small" label={`Layer ${layer.number}`} sx={{ alignSelf: 'flex-start', fontWeight: 700 }} />
-//                         <Typography fontWeight={700}>{layer.name}</Typography>
-//                         <Box sx={{ flexGrow: 1 }} />
-//                         <Typography variant="body2" color="text.secondary">{layer.protocols.join(' · ')}</Typography>
-//                     </Stack>
-//                     {!compact && <Typography variant="body2" sx={{ mt: 1 }}>{layer.shortDescription}</Typography>}
-//                 </Paper>
-//             ))}
-//         </Stack>
-//     );
-// }
-
-// function FlowDiagram() {
-//     const steps = [
-//         ['Application data', 'Message / HTTP request / app protocol'],
-//         ['Representation & protection', 'Encoding, serialization, compression, encryption concepts'],
-//         ['Transport', 'Ports; TCP segments or UDP datagrams; QUIC runs over UDP'],
-//         ['Internet / Network', 'IP packet; source and destination IP; routing'],
-//         ['Network access', 'Local frame; MAC addressing on Ethernet/Wi-Fi'],
-//         ['Physical medium', 'Bits carried as radio, electrical, or optical signals'],
-//     ];
-//     return (
-//         <Stack alignItems="stretch" spacing={0}>
-//             {steps.map(([title, detail], index) => (
-//                 <Box key={title}>
-//                     <Paper variant="outlined" sx={{ p: 1.5, textAlign: 'center', bgcolor: index % 2 ? 'action.hover' : 'background.paper' }}>
-//                         <Typography fontWeight={700}>{title}</Typography>
-//                         <Typography variant="body2" color="text.secondary">{detail}</Typography>
-//                     </Paper>
-//                     {index < steps.length - 1 && (
-//                         <Typography aria-hidden textAlign="center" color="text.secondary" sx={{ py: 0.4, fontSize: 22 }}>↓</Typography>
-//                     )}
-//                 </Box>
-//             ))}
-//         </Stack>
-//     );
-// }
-
-// export default function NetworkModelsLesson() {
-//     const [tab, setTab] = useState(0);
-//     const [expanded, setExpanded] = useState<string | false>('layer-7');
-//     const osiByNumber = useMemo(() => [...osiLayers].sort((a, b) => b.number - a.number), []);
-
-//     return (
-//         <Box sx={{ maxWidth: 1100, mx: 'auto', p: { xs: 2, md: 3 } }}>
-//             <Stack spacing={3}>
-//                 <Box>
-//                     <Typography variant="h4" fontWeight={800} gutterBottom>OSI Model & TCP/IP Model</Typography>
-//                     <Typography color="text.secondary">
-//                         A practical, layer-by-layer guide to how application data is represented, transported, routed, and transmitted across a network.
-//                     </Typography>
-//                 </Box>
-
-//                 <Alert severity="info">
-//                     <strong>Remember:</strong> OSI is a conceptual 7-layer reference model. Real Internet protocols do not always fit neatly into one OSI layer; TLS, QUIC, and application-managed sessions are common examples.
-//                 </Alert>
-
-//                 <Tabs value={tab} onChange={(_, value) => setTab(value)} variant="scrollable" scrollButtons="auto">
-//                     <Tab label="OSI 7 Layers" />
-//                     <Tab label="Data Flow Diagram" />
-//                     <Tab label="WhatsApp Example" />
-//                     <Tab label="OSI vs TCP/IP" />
-//                 </Tabs>
-
-//                 {tab === 0 && (
-//                     <Stack spacing={2}>
-//                         <Paper variant="outlined" sx={{ p: 2 }}>
-//                             <Typography variant="h6" fontWeight={800}>OSI — Open Systems Interconnection</Typography>
-//                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Read from Layer 7 (closest to the app) down to Layer 1 (closest to the physical medium).</Typography>
-//                             <LayerStack layers={osiLayers} />
-//                         </Paper>
-//                         <Typography variant="h6" fontWeight={800}>Detailed explanation of each layer</Typography>
-//                         {osiByNumber.map((layer) => (
-//                             <Accordion
-//                                 key={layer.number}
-//                                 expanded={expanded === `layer-${layer.number}`}
-//                                 onChange={(_, isOpen) => setExpanded(isOpen ? `layer-${layer.number}` : false)}
-//                             >
-//                                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-//                                     <Stack direction="row" spacing={1.5} alignItems="center">
-//                                         <Chip label={layer.number} size="small" />
-//                                         <Typography fontWeight={700}>{layer.name}</Typography>
-//                                     </Stack>
-//                                 </AccordionSummary>
-//                                 <AccordionDetails>
-//                                     <Stack spacing={1.5}>
-//                                         <Typography>{layer.description}</Typography>
-//                                         <Typography variant="subtitle2">Main responsibilities</Typography>
-//                                         <Box component="ul" sx={{ m: 0, pl: 3 }}>{layer.responsibilities.map((item) => <li key={item}><Typography variant="body2">{item}</Typography></li>)}</Box>
-//                                         <Typography variant="subtitle2">Protocols / examples</Typography>
-//                                         <Stack direction="row" flexWrap="wrap" gap={1}>{layer.protocols.map((item) => <Chip key={item} label={item} size="small" variant="outlined" />)}</Stack>
-//                                         <Alert severity="info" icon={false}><strong>Key point:</strong> {layer.keyPoint}</Alert>
-//                                     </Stack>
-//                                 </AccordionDetails>
-//                             </Accordion>
-//                         ))}
-//                     </Stack>
-//                 )}
-
-//                 {tab === 1 && (
-//                     <Stack spacing={2}>
-//                         <Typography variant="h6" fontWeight={800}>How data moves down the stack</Typography>
-//                         <Typography color="text.secondary">At the sender, each lower layer adds information needed for delivery (encapsulation). At the receiver, the process is reversed (decapsulation).</Typography>
-//                         <FlowDiagram />
-//                         <Paper variant="outlined" sx={{ p: 2 }}>
-//                             <Typography fontWeight={800} gutterBottom>Example: JavaScript object → bytes</Typography>
-//                             <Box component="pre" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace', bgcolor: 'action.hover', p: 2, borderRadius: 1, overflowX: 'auto' }}>{`JavaScript object\n{ name: "Gourav", age: 25 }\n        ↓ serialize as JSON\n{"name":"Gourav","age":25}\n        ↓ encode text as UTF-8\nBytes: 7B 22 6E 61 6D 65 22 3A ...`}</Box>
-//                             <Typography variant="body2" color="text.secondary">Serialization converts a data structure into a transferable representation. UTF-8 encodes text into bytes. JSON is a format, not a transport protocol.</Typography>
-//                         </Paper>
-//                     </Stack>
-//                 )}
-
-//                 {tab === 2 && (
-//                     <Stack spacing={2}>
-//                         <Typography variant="h6" fontWeight={800}>Real-life example: sending “Hi, kaise ho?” on WhatsApp</Typography>
-//                         <Alert severity="warning">This is a conceptual mapping, not a claim that WhatsApp uses every OSI layer as a separate module or always uses one specific transport protocol.</Alert>
-//                         {whatsappFlow.map((step) => (
-//                             <Paper key={step.number} variant="outlined" sx={{ p: 2 }}>
-//                                 <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-//                                     <Chip label={`Step ${step.number}`} size="small" color="primary" />
-//                                     <Typography fontWeight={800}>{step.title}</Typography>
-//                                 </Stack>
-//                                 <Typography>{step.description}</Typography>
-//                                 {step.points.length > 0 && <Box component="ul" sx={{ mb: 0, pl: 3 }}>{step.points.map((point) => <li key={point}><Typography variant="body2">{point}</Typography></li>)}</Box>}
-//                             </Paper>
-//                         ))}
-//                         <Paper variant="outlined" sx={{ p: 2 }}>
-//                             <Typography fontWeight={800} gutterBottom>At a high level</Typography>
-//                             <FlowDiagram />
-//                             <Divider sx={{ my: 2 }} />
-//                             <Typography variant="body2" color="text.secondary">The message may travel from the phone over Wi-Fi or mobile radio, through the ISP and multiple routers, to service infrastructure. Return traffic follows routing decisions too; the exact path can differ.</Typography>
-//                         </Paper>
-//                     </Stack>
-//                 )}
-
-//                 {tab === 3 && (
-//                     <Stack spacing={2}>
-//                         <Typography variant="h6" fontWeight={800}>OSI vs TCP/IP model</Typography>
-//                         <Paper variant="outlined" sx={{ p: 2 }}>
-//                             <Typography variant="subtitle1" fontWeight={700} gutterBottom>Layer mapping</Typography>
-//                             {osiTcpIpMapping.map((row) => (
-//                                 <Stack key={row.osi} direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ sm: 'center' }} sx={{ py: 1.2 }}>
-//                                     <Box sx={{ flex: 1 }}><Typography fontWeight={600}>{row.osi}</Typography></Box>
-//                                     <Typography color="text.secondary">→</Typography>
-//                                     <Box sx={{ flex: 1 }}><Typography fontWeight={600}>{row.tcpIp}</Typography></Box>
-//                                 </Stack>
-//                             ))}
-//                         </Paper>
-//                         <Typography variant="h6" fontWeight={800}>TCP/IP model — 4 layers</Typography>
-//                         <LayerStack layers={tcpIpLayers} />
-//                         <Alert severity="info">TCP/IP is the practical protocol suite and model used to describe Internet communication. In the common 4-layer view, OSI Application + Presentation + Session map to TCP/IP Application; OSI Data Link + Physical map to Network Access.</Alert>
-//                     </Stack>
-//                 )}
-//             </Stack>
-//         </Box>
-//     );
-// }
 
 import { useState, type ReactNode } from "react";
 import {
@@ -232,10 +42,7 @@ import {
 
 const MONO = "ui-monospace, Menlo, monospace";
 
-/** Semi-transparent version of any CSS colour */
 const tint = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
-
-
 
 function useLayerColor() {
   const theme = useTheme();
@@ -245,7 +52,7 @@ function useLayerColor() {
 
 const ORDERED_LAYERS = [...OSI_LAYERS].sort((a, b) => b.number - a.number); // 7 → 1
 
-/* ───────────────────────── Small building blocks ───────────────────────── */
+
 
 function LayerBadge({ n, size = 26 }: { n: number; size?: number }) {
   const color = useLayerColor()(n);
@@ -274,7 +81,7 @@ function LayerBadge({ n, size = 26 }: { n: number; size?: number }) {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Box>
-      <Typography sx={{ fontSize: 10.5, fontWeight: 850, letterSpacing: 0.6, color: "text.secondary", textTransform: "uppercase", mb: 0.7 }}>
+      <Typography sx={{ fontSize: 8.5, fontWeight: 850, letterSpacing: 0.6, color: "text.secondary", textTransform: "uppercase", mb: 0.7 }}>
         {title}
       </Typography>
       {children}

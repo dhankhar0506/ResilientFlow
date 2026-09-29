@@ -127,7 +127,7 @@ export const CATEGORIES = [
 
 export const NETWORK_LESSONS = [
   { id: "definitions", icon: "📚", available: true, label: "Networking definitions" },
-  { id: "http", icon: "🌐", available: true, label: "HTTP Request & Response" },
+  { id: "http", icon: "🌐", available: true, label: "HTTP Request" },
   { id: "ip-structure", icon: "🔢", available: true, label: "IP address structure" },
   { id: "host-cidr", icon: "🧮", available: true, label: "Network, Host & CIDR" },
   { id: "subnet", icon: "🎭", available: true, label: "Subnet mask" },
@@ -150,9 +150,15 @@ export const NETWORK_LESSONS = [
     label: "Address Resolution Protocol (ARP)",
   },
   { id: "osi", icon: "🧱", available: true, label: "OSI & TCP/IP layers" },
+  {
+    id: "routing",
+    icon: "🌐",
+    available: true,
+    label: "Routing in Networks",
+  },
+  { id: "DNSLookup", icon: "🔎", available: true, label: "DNS lookup" },
   { id: "packet", icon: "📦", available: false, label: "Packet journey" },
   { id: "arp", icon: "🏷️", available: false, label: "ARP & MAC addresses" },
-  { id: "dns", icon: "🔎", available: false, label: "DNS lookup" },
   { id: "tcp", icon: "🤝", available: false, label: "TCP · TLS · HTTP" },
   { id: "subnet", icon: "🧮", available: false, label: "IP & subnetting" },
 ];

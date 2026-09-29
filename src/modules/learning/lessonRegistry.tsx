@@ -16,9 +16,11 @@ export const LESSON_COMPONENTS: Record<string, Lesson> = {
     "host-cidr": lazy(() => import("../network/components/NetworkHostCidr")),
     subnet: lazy(() => import("../network/components/Subnetmask")),
     "default-gateway": lazy(() => import("../network/components/DefaultGateway")),
-    "mac-address" : lazy(() => import("../network/components/MacAddress")),
-    "arp" : lazy(() => import("../network/components/ARPLesson")),
-    "osi": lazy(() => import("../network/components/OSI_TCP_IP"))
+    "mac-address": lazy(() => import("../network/components/MacAddress")),
+    "arp": lazy(() => import("../network/components/ARPLesson")),
+    "osi": lazy(() => import("../network/components/OSI_TCP_IP")),
+    "routing": lazy(() => import("../network/components/RoutingLesson")),
+    "DNSLookup": lazy(() => import("../network/components/DNSLookup"))
 
     // Naya lesson yahan add karo 👇
     // osi: lazy(() => import("../network/components/OsiModel")),
