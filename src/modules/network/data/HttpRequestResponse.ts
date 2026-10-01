@@ -1,456 +1,4 @@
-// // ALL lesson data lives in this one file. Put it in ../data/HttpRequestResponse.ts (replace the old one).
 
-// export type Bi = { en: string; hi: string };
-// const b = (en: string, hi: string = en): Bi => ({ en, hi });
-
-// export const HTTP_UI = {
-//   en: {
-//     lessonTitle: "HTTP Request & Response",
-//     requestJourney: "Journey",
-//     known: "Known so far",
-//     domain: "Domain",
-//     protocol: "Protocol",
-//     source: "From",
-//     destination: "To",
-//     tabAnalogy: "Real life",
-//     tabWords: "Key words",
-//     tabLayers: "Wrapping",
-//     tabDetails: "Details",
-//     diagramLabel: "Picture it",
-//     dataLabel: "Moving now",
-//     readMore: "Read more",
-//     layerData: "Message (HTTP)",
-//     layerTls: "TLS record",
-//     layerSegment: "TCP segment",
-//     layerPacket: "IP packet",
-//     layerFrame: "Link frame",
-//     physicalNote: "The frame travels as electric, radio or light signals.",
-//     layersHint: "Each layer wraps the one inside it. Handshake and data packets are wrapped the same way.",
-//   },
-//   hi: {
-//     lessonTitle: "HTTP Request & Response",
-//     requestJourney: "Safar",
-//     known: "Ab tak pata hai",
-//     domain: "Domain",
-//     protocol: "Protocol",
-//     source: "Kaha se",
-//     destination: "Kaha tak",
-//     tabAnalogy: "Real life",
-//     tabWords: "Zaroori words",
-//     tabLayers: "Wrapping",
-//     tabDetails: "Details",
-//     diagramLabel: "Visual samjho",
-//     dataLabel: "Abhi move ho raha hai",
-//     readMore: "Aur padho",
-//     layerData: "Message (HTTP)",
-//     layerTls: "TLS record",
-//     layerSegment: "TCP segment",
-//     layerPacket: "IP packet",
-//     layerFrame: "Link frame",
-//     physicalNote: "Frame electric, radio ya light signals se travel karta hai.",
-//     layersHint: "Har layer andar wali ko wrap karti hai. Handshake aur data packets ek jaise wrap hote hain.",
-//   },
-// } as const;
-
-// export const NODES = [
-//   { icon: "💻", en: { title: "Browser", sub: "Your device" }, hi: { title: "Browser", sub: "Aapka device" } },
-//   { icon: "🌐", en: { title: "Network", sub: "The road" }, hi: { title: "Network", sub: "Raasta" } },
-//   { icon: "🗄️", en: { title: "Server", sub: "The answerer" }, hi: { title: "Server", sub: "Jawab dene wala" } },
-// ];
-
-// export type Layer = "app" | "tls" | "transport" | "network" | "datalink" | "physical" | "none";
-// export const LAYER_RANK: Record<Layer, number> = {
-//   none: 0, app: 1, tls: 2, transport: 3, network: 4, datalink: 5, physical: 5,
-// };
-
-// export interface ConnectionReveal {
-//   domain?: string;
-//   protocol?: string;
-//   sourceIp?: string;
-//   sourcePort?: string;
-//   destIp?: string;
-//   destPort?: string;
-// }
-
-// export interface HttpStep {
-//   id: string;
-//   phase: string;
-//   node: 0 | 1 | 2;
-//   layer: Layer;
-//   packet: string;
-//   reveal?: ConnectionReveal;
-//   title: Bi;
-//   plain: Bi; // one-sentence version, shown big
-//   detail: Bi; // longer explanation, always shown in Details
-//   icons: string[]; // one emoji per item
-//   items: Bi[]; // diagram boxes: first line = title, next line = small text
-//   analogy: Bi;
-//   remember: Bi;
-//   terms: [string, Bi][]; // key words
-//   fields?: [string, string][]; // "look inside" rows
-// }
-
-// export const HTTP_STEPS: HttpStep[] = [
-//   {
-//     id: "scenario", phase: "1 · Meet the sides", node: 0, layer: "none",
-//     packet: "Browser → https://api.example.com/profile → Server",
-//     reveal: { domain: "api.example.com", protocol: "HTTPS" },
-//     title: b("Meet the two sides", "Dono sides ko jaano"),
-//     plain: b("A website is a conversation: your browser asks, a far-away computer answers.", "Website ek baatcheet hai: browser poochta hai, door ka computer jawab deta hai."),
-//     detail: b(
-//       "Your React app runs in the browser (the client). It needs a profile from a Node.js app on a cloud server. We follow one request to https://api.example.com/profile. This is an example address, not a real server.",
-//       "Aapki React app browser (client) mein chalti hai. Use cloud server ki Node.js app se profile chahiye. Hum https://api.example.com/profile request follow karenge. Yeh example address hai, real server nahi."
-//     ),
-//     icons: ["💻", "🌍", "🗄️"],
-//     items: [b("Your laptop\nReact app", "Aapka laptop\nReact app"), b("Internet\nThe route", "Internet\nRaasta"), b("Cloud server\nNode.js app")],
-//     analogy: b("Like posting a letter from home to an office in another city.", "Ghar se doosre shehar ke office ko letter bhejne jaisa."),
-//     remember: b("Client asks. Server answers.", "Client maangta hai. Server jawab deta hai."),
-//     terms: [["Client", b("The one who asks.", "Jo maangta hai.")], ["Server", b("The one who answers.", "Jo jawab deta hai.")]],
-//   },
-//   {
-//     id: "fetch-call", phase: "2 · Ask", node: 0, layer: "app",
-//     packet: 'fetch("https://api.example.com/profile")',
-//     title: b("Your app asks for data", "App data maangti hai"),
-//     plain: b("One line of code says: \"go get me this data.\"", "Code ki ek line bolti hai: \"yeh data laao.\""),
-//     detail: b(
-//       "fetch(\"https://api.example.com/profile\") tells the browser the page wants data from that URL. The browser prepares the request and handles the networking. You never write code for each router or cable.",
-//       "fetch(\"https://api.example.com/profile\") browser ko batata hai ki page ko is URL se data chahiye. Browser request banata hai aur networking sambhalta hai. Har router ya cable ka code nahi likhna padta."
-//     ),
-//     icons: ["⚛️", "📞", "📨"],
-//     items: [b("React page"), b("fetch(url)"), b("Profile request")],
-//     analogy: b("Telling a delivery service: \"Please bring me this package.\"", "Delivery service ko bolna: \"Yeh package laao.\""),
-//     remember: b("fetch() only starts the journey.", "fetch() sirf safar shuru karta hai."),
-//     terms: [["URL", b("A full web address.", "Poora web address.")], ["API", b("A menu of things a server will do.", "Server ke kaamon ki menu.")]],
-//   },
-//   {
-//     id: "url-parts", phase: "3 · Read address", node: 0, layer: "app",
-//     packet: "https://api.example.com:443/profile",
-//     title: b("The browser reads the URL", "Browser URL padhta hai"),
-//     plain: b("A URL has 4 parts: how to talk, who to talk to, which door, what to ask for.", "URL ke 4 parts: kaise baat, kis se, kaunsa darwaza, kya maangna."),
-//     detail: b(
-//       "https means the connection is protected with TLS. api.example.com is the domain name. HTTPS normally uses port 443. /profile is the path the app wants.",
-//       "https ka matlab TLS se protected connection. api.example.com domain name hai. HTTPS normally port 443 use karta hai. /profile woh path hai jo app maangti hai."
-//     ),
-//     icons: ["🔒", "🏷️", "🚪", "📄"],
-//     items: [b("https://\nHow"), b("api.example.com\nWho"), b(":443\nWhich door"), b("/profile\nWhat")],
-//     analogy: b("Like an address: city, building, room number.", "Address jaisa: city, building, room number."),
-//     remember: b("Domain = name · Port = door · Path = item.", "Domain = naam · Port = darwaza · Path = cheez."),
-//     terms: [["Domain", b("A human-friendly name.", "Insaan ke liye aasaan naam.")], ["Port", b("A numbered door on a computer.", "Computer ka numbered darwaza.")]],
-//     fields: [["https", "Secure web protocol"], ["api.example.com", "Domain / server name"], ["443", "Default HTTPS port"], ["/profile", "Requested path"]],
-//   },
-//   {
-//     id: "browser-checks", phase: "4 · Browser checks", node: 0, layer: "none",
-//     packet: "Cache? HTTPS rule? Cross-origin? → maybe an OPTIONS preflight",
-//     title: b("The browser checks the rules first", "Browser pehle rules check karta hai"),
-//     plain: b("Before going out, the browser checks its cache and its safety rules.", "Bahar jaane se pehle browser cache aur safety rules check karta hai."),
-//     detail: b(
-//       "The browser may already have a saved answer (cache), or know that this site must use HTTPS (HSTS). Your React app runs on localhost:3000 but the API is on api.example.com, so this is a cross-origin request. If your code adds an Authorization header, the browser first sends a small OPTIONS preflight to ask the server for permission. A missing permission is the famous \"CORS error\".",
-//       "Browser ke paas saved answer (cache) ho sakta hai, ya pata ho sakta hai ki site HTTPS hi use karegi (HSTS). Aapki React app localhost:3000 par hai aur API api.example.com par, isliye yeh cross-origin request hai. Code Authorization header lagaye toh browser pehle chhota OPTIONS preflight bhejkar server se permission poochta hai. Permission na mile toh famous \"CORS error\" aata hai."
-//     ),
-//     icons: ["🗃️", "🛡️", "🛂"],
-//     items: [b("Cache\nSaved answer?"), b("HTTPS rule\nHSTS"), b("CORS\nAllowed origin?")],
-//     analogy: b("A guard checks your pass before you leave the building.", "Guard building se nikalne se pehle pass check karta hai."),
-//     remember: b("CORS is enforced by the browser, not by the network.", "CORS browser enforce karta hai, network nahi."),
-//     terms: [["CORS", b("Rules about which sites may read a server's data.", "Rules ki kaunsi sites server ka data padh sakti hain.")], ["Preflight", b("A permission-check sent before the real request.", "Asli request se pehle bheja permission-check.")]],
-//   },
-//   {
-//     id: "dns", phase: "5 · Find server", node: 1, layer: "none",
-//     packet: "api.example.com → 203.0.113.10 (example IP)",
-//     reveal: { destIp: "203.0.113.10" },
-//     title: b("Find the server's IP address", "Server ka IP dhoondo"),
-//     plain: b("Computers can't use names. DNS turns a name into a number.", "Computers naam nahi samajhte. DNS naam ko number banata hai."),
-//     detail: b(
-//       "Computers route traffic with IP addresses; people prefer names. DNS is the internet's phone book. The browser or OS may already have the answer cached, so a fresh lookup isn't always needed. The IP shown is a documentation example.",
-//       "Computers IP se traffic route karte hain; log naam yaad rakhte hain. DNS internet ki phone book hai. Browser ya OS ke cache mein answer ho sakta hai, isliye har baar naya lookup nahi hota. Yeh IP sirf example hai."
-//     ),
-//     icons: ["🏷️", "📒", "🔢"],
-//     items: [b("Name\napi.example.com"), b("DNS lookup"), b("IP address\n203.0.113.10")],
-//     analogy: b("Searching a name in your contacts to get the phone number.", "Contacts mein naam search karke number nikalna."),
-//     remember: b("DNS: name → IP.", "DNS: naam → IP."),
-//     terms: [["DNS", b("The internet's phone book.", "Internet ki phone book.")], ["IP address", b("A device's number on a network.", "Network par device ka number.")]],
-//   },
-//   {
-//     id: "gather-criteria", phase: "6 · Addresses", node: 0, layer: "none",
-//     packet: "Client (temporary port) → Server IP : 443",
-//     reveal: { destPort: "443" },
-//     title: b("Prepare 'from' and 'to'", "'Kaha se' aur 'kaha tak' ready karo"),
-//     plain: b("Like a parcel, the connection needs a sender and a receiver, each with IP + port.", "Parcel ki tarah sender aur receiver chahiye, dono ke IP + port."),
-//     detail: b(
-//       "The destination is the server IP with port 443. Your OS supplies a source IP and usually picks a temporary source port. React's localhost:3000 is not the source port of this API request.",
-//       "Destination server IP + port 443 hai. OS source IP deta hai aur usually temporary source port chunta hai. React ka localhost:3000 is API request ka source port nahi hota."
-//     ),
-//     icons: ["💻", "🗄️"],
-//     items: [b("Your device\nIP + temporary port", "Aapka device\nIP + temporary port"), b("Server\nIP + port 443")],
-//     analogy: b("A return address and a delivery address on a parcel.", "Parcel par sender aur receiver ka address."),
-//     remember: b("Dev-server port ≠ network source port.", "Dev-server port ≠ network source port."),
-//     terms: [["Source", b("Where data starts.", "Jaha data shuru hota hai.")], ["Destination", b("Where data must arrive.", "Jaha data pahunchna hai.")]],
-//     fields: [["Client IP", "Your device's IP"], ["Client port", "Temporary port"], ["Server IP", "Found via DNS"], ["Server port", "443 for HTTPS"]],
-//   },
-//   {
-//     id: "mac-arp", phase: "7 · Local address", node: 1, layer: "datalink",
-//     packet: "ARP: \"Who has my gateway's IP?\" → gateway MAC",
-//     title: b("Find the next device's MAC", "Agle device ka MAC dhoondo"),
-//     plain: b("At home, delivery uses hardware names (MAC). ARP asks \"who owns this IP?\"", "Ghar mein delivery hardware naam (MAC) se hoti hai. ARP poochta hai \"yeh IP kiska?\""),
-//     detail: b(
-//       "This happens before your first packet leaves (the answer is often already cached). To send a frame on Wi-Fi or Ethernet you need the next device's MAC. For an outside server, that device is usually your default gateway (router). On IPv4, ARP asks which MAC owns the gateway's IP. IPv6 uses Neighbor Discovery instead.",
-//       "Yeh pehla packet nikalne se pehle hota hai (answer aksar cache mein hota hai). Wi-Fi ya Ethernet par frame bhejne ke liye agle device ka MAC chahiye. Bahar ke server ke liye woh usually default gateway (router) hota hai. IPv4 mein ARP gateway IP ka MAC poochta hai. IPv6 mein Neighbor Discovery hota hai."
-//     ),
-//     icons: ["🏠", "🔔", "📡"],
-//     items: [b("Laptop knows\nGateway IP", "Laptop ko pata\nGateway IP"), b("ARP asks\n\"Who has it?\"", "ARP poochta\n\"Kiska hai?\""), b("Router replies\nIts MAC", "Router batata\nApna MAC")],
-//     analogy: b("You know the house number, ask which doorbell is theirs.", "Ghar ka number pata hai, doorbell poochte ho."),
-//     remember: b("ARP finds a MAC for a local IPv4 address.", "ARP local IPv4 ka MAC dhoondhta hai."),
-//     terms: [["MAC address", b("A hardware ID on a network card.", "Network card ka hardware ID.")], ["Gateway", b("Your router, the exit door.", "Aapka router, bahar ka darwaza.")]],
-//     fields: [["ARP knows", "Local IPv4 address"], ["ARP finds", "That device's MAC"], ["Usual target", "Default gateway"]],
-//   },
-//   {
-//     id: "tcp-handshake", phase: "8 · Connect", node: 1, layer: "transport",
-//     packet: "SYN → SYN + ACK → ACK",
-//     title: b("TCP says hello first", "TCP pehle hello bolta hai"),
-//     plain: b("Before sending data, both computers say hello 3 times to check the line.", "Data se pehle dono computers 3 baar hello bolte hain."),
-//     detail: b(
-//       "Every message below is itself wrapped in an IP packet and a frame. A new TCP connection starts with a three-way handshake: SYN starts, SYN-ACK replies, ACK finishes. TCP then delivers data reliably and in order. If a suitable connection is already open, the browser reuses it.",
-//       "Neeche ka har message bhi IP packet aur frame mein wrap hota hai. Naya TCP connection three-way handshake se shuru hota hai: SYN shuru, SYN-ACK reply, ACK complete. Phir TCP data reliable aur order mein deta hai. Connection open ho toh browser reuse karta hai."
-//     ),
-//     icons: ["👋", "🤝", "✅"],
-//     items: [b("1 · SYN\n\"Can we connect?\"", "1 · SYN\n\"Connect karein?\""), b("2 · SYN-ACK\n\"Yes, I hear you\"", "2 · SYN-ACK\n\"Haan, sun liya\""), b("3 · ACK\n\"Great, ready\"", "3 · ACK\n\"Theek, ready\"")],
-//     analogy: b("\"Can you hear me?\" → \"Yes, can you?\" → \"Yes.\"", "\"Awaaz aa rahi?\" → \"Haan, tumhari?\" → \"Haan.\""),
-//     remember: b("TCP = reliable, ordered delivery.", "TCP = reliable, ordered delivery."),
-//     terms: [["TCP", b("Rules for reliable delivery.", "Reliable delivery ke rules.")], ["Handshake", b("A short greeting to start.", "Shuru karne ka greeting.")]],
-//   },
-//   {
-//     id: "tls-handshake", phase: "9 · Protect", node: 1, layer: "tls",
-//     packet: "TLS handshake → certificate check + secret keys",
-//     title: b("TLS makes HTTPS private", "TLS HTTPS ko private banata hai"),
-//     plain: b("The server shows an ID card; if it's valid, both agree on a secret code.", "Server ID card dikhata hai; sahi ho toh dono secret code agree karte hain."),
-//     detail: b(
-//       "The browser and server negotiate security settings and keys. The server sends a certificate; the browser checks it is trusted, valid and matches the domain. After setup, application data is encrypted.",
-//       "Browser aur server security settings aur keys agree karte hain. Server certificate bhejta hai; browser check karta hai ki trusted, valid aur domain se match hai. Setup ke baad data encrypt hota hai."
-//     ),
-//     icons: ["🔐", "📜", "🗝️"],
-//     items: [b("Browser\n\"Let's secure this\"", "Browser\n\"Secure karein\""), b("Server\nCertificate"), b("Both sides\nSecret keys", "Dono sides\nSecret keys")],
-//     analogy: b("Checking someone's ID before sharing a private note.", "Private note dene se pehle ID check karna."),
-//     remember: b("TLS protects data; the certificate proves identity.", "TLS data protect karta hai; certificate identity prove karta hai."),
-//     terms: [["TLS", b("Makes HTTPS private.", "HTTPS ko private banata hai.")], ["Certificate", b("A server's digital ID card.", "Server ka digital ID card.")]],
-//   },
-//   {
-//     id: "build-request", phase: "10 · Write message", node: 0, layer: "app",
-//     packet: "GET /profile · Host: api.example.com · headers",
-//     title: b("Build the HTTP request", "HTTP request banao"),
-//     plain: b("The browser fills a small form: action, item, and extra notes.", "Browser chhota form bharta hai: action, cheez, extra notes."),
-//     detail: b(
-//       "The message has a method (GET = read), a path (/profile) and headers with extra details. An app may add an Authorization token; cookies are sent only when allowed. A GET usually has no body. None of this is an IP or MAC address.",
-//       "Message mein method (GET = padho), path (/profile) aur extra headers hote hain. App Authorization token laga sakti hai; cookies tabhi jaati hain jab allowed ho. GET mein aksar body nahi hoti. Yeh IP ya MAC nahi hai."
-//     ),
-//     icons: ["🏷️", "📄", "🧾"],
-//     items: [b("Method\nGET"), b("Path\n/profile"), b("Headers\nExtra details")],
-//     analogy: b("A form: request type, item name, optional notes.", "Form: request type, item naam, optional notes."),
-//     remember: b("HTTP says what the client wants done.", "HTTP batata hai client kya karwana chahta hai."),
-//     terms: [["Method", b("The action: GET = read.", "Action: GET = padho.")], ["Header", b("Extra info on a message.", "Message ki extra jankari.")]],
-//     fields: [["Method", "GET, ask to read data"], ["Path", "/profile"], ["Headers", "Extra request info"], ["Authorization", "Bearer token, if app adds it"]],
-//   },
-//   {
-//     id: "bytes", phase: "11 · Make bytes", node: 0, layer: "tls",
-//     packet: "HTTP message → bytes → (TLS encrypts)",
-//     title: b("The message becomes bytes", "Message bytes banta hai"),
-//     plain: b("Computers only understand 1s and 0s, so text becomes bytes, then gets locked.", "Computers sirf 1 aur 0 samajhte hain, isliye text bytes banta hai, phir lock hota hai."),
-//     detail: b(
-//       "The browser serializes the request into bytes (groups of 8 bits). For HTTPS, TLS then encrypts them into TLS records, and TCP carries those records. Turning text into bytes and encrypting are two different ideas.",
-//       "Browser request ko bytes (8 bits ke groups) mein badalta hai. HTTPS mein TLS unhe encrypt karke TLS records banata hai, jinhe TCP carry karta hai. Bytes banana aur encrypt karna alag concepts hain."
-//     ),
-//     icons: ["📝", "🔢", "🔒"],
-//     items: [b("Readable\nGET /profile"), b("Bytes\n0101…"), b("Encrypted\nTLS data")],
-//     analogy: b("Writing a note, then sealing it in a locked box.", "Note likhna, phir locked box mein rakhna."),
-//     remember: b("Bytes = form. Encryption = protection.", "Bytes = form. Encryption = protection."),
-//     terms: [["Byte", b("8 bits of data.", "Data ke 8 bits.")], ["Encryption", b("Scrambling so only the receiver can read.", "Scramble karna taaki sirf receiver padh sake.")]],
-//   },
-//   {
-//     id: "handoff-os", phase: "12 · Hand off", node: 0, layer: "none",
-//     packet: "Browser → Operating system → Network card",
-//     title: b("The browser hands work to the OS", "Browser kaam OS ko deta hai"),
-//     plain: b("The browser writes the letter; the OS and network card send it out.", "Browser letter likhta hai; OS aur network card bhejte hain."),
-//     detail: b(
-//       "The browser's networking code works with the OS network stack. The OS and network interface put data on Wi-Fi or Ethernet. The exact split varies by browser and platform.",
-//       "Browser ka networking code OS ke network stack ke saath kaam karta hai. OS aur network interface data Wi-Fi ya Ethernet par bhejte hain. Exact division platform par depend karta hai."
-//     ),
-//     icons: ["🌐", "⚙️", "📶"],
-//     items: [b("Browser\nHTTP request"), b("OS\nTCP/IP"), b("Network card\nWi-Fi / Ethernet")],
-//     analogy: b("You write a letter, the post office delivers it.", "Aap letter likhte ho, post office deliver karta hai."),
-//     remember: b("The browser doesn't control the Wi-Fi radio.", "Browser Wi-Fi radio control nahi karta."),
-//     terms: [["OS", b("Windows, macOS, Linux, Android…")], ["Network card", b("Hardware that sends signals.", "Signals bhejne wala hardware.")]],
-//   },
-//   {
-//     id: "chunking", phase: "13 · Split", node: 1, layer: "transport",
-//     packet: "Byte stream → TCP segments",
-//     title: b("Big data travels in pieces", "Bada data tukdon mein jaata hai"),
-//     plain: b("Big data is cut into small pieces and rebuilt at the other end.", "Bade data ke chhote tukde bante hain aur doosri taraf jud jaate hain."),
-//     detail: b(
-//       "A long response, like a photo, is carried in many TCP segments. MSS is the biggest TCP payload in a segment; MTU is the biggest packet a link can carry. A small request may fit in one segment.",
-//       "Bada response, jaise photo, kai TCP segments mein jaata hai. MSS segment ka max TCP payload hai; MTU link ka max packet size. Chhoti request ek segment mein aa jaati hai."
-//     ),
-//     icons: ["📚", "🧩", "✅"],
-//     items: [b("Big data", "Bada data"), b("Piece 1 · 2 · 3", "Tukda 1 · 2 · 3"), b("Rebuilt at receiver", "Receiver par jud gaya")],
-//     analogy: b("Sending a big book as several parcels.", "Badi book ko kai parcels mein bhejna."),
-//     remember: b("MSS = TCP payload limit · MTU = link limit.", "MSS = TCP payload limit · MTU = link limit."),
-//     terms: [["Segment", b("One piece of TCP data.", "TCP data ka ek tukda.")], ["MTU", b("Biggest packet a link carries.", "Link ka sabse bada packet.")]],
-//   },
-//   {
-//     id: "tcp-segment", phase: "14 · Label pieces", node: 1, layer: "transport",
-//     packet: "TCP header + data = TCP segment",
-//     title: b("TCP adds ports and numbers", "TCP ports aur numbers lagata hai"),
-//     plain: b("TCP sticks a label on each piece: which door, and which number in order.", "TCP har tukde par label lagata hai: kaunsa darwaza, kaunsa number."),
-//     detail: b(
-//       "The TCP header holds source and destination ports and a sequence number. Sequence numbers let the receiver put bytes in order and spot missing ones. Flags like SYN and ACK control the connection; normal data segments don't all carry SYN.",
-//       "TCP header mein source/destination ports aur sequence number hota hai. Sequence number se receiver bytes ko order mein jodta hai aur missing bytes pakadta hai. SYN/ACK flags connection control karte hain; har data segment mein SYN nahi hota."
-//     ),
-//     icons: ["🏷️", "📄", "📦"],
-//     items: [b("TCP header\nPorts + order"), b("Data\nBytes"), b("TCP segment")],
-//     analogy: b("A parcel label with door number and tracking number.", "Parcel label: darwaza aur tracking number."),
-//     remember: b("Ports find the app; sequence numbers keep order.", "Ports app dhoondhte hain; sequence numbers order rakhte hain."),
-//     terms: [["Header", b("The label in front of data.", "Data ke aage ka label.")], ["Sequence no.", b("Tells the correct order.", "Sahi order batata hai.")]],
-//     fields: [["Source port", "Temporary client port"], ["Destination port", "443"], ["Sequence number", "Byte position"], ["Flags", "Connection control (ACK…)"]],
-//   },
-//   {
-//     id: "ip-packet", phase: "15 · Add addresses", node: 1, layer: "network",
-//     packet: "IP header (source IP + destination IP) + TCP segment",
-//     title: b("IP adds the destination address", "IP destination address lagata hai"),
-//     plain: b("IP adds the big shipping address so routers know where to send it.", "IP bada shipping address lagata hai taaki routers ko pata ho."),
-//     detail: b(
-//       "The IP layer wraps the TCP segment in an IP packet with source and destination IPs. Routers read the destination IP to choose the next direction. IP moves packets between networks; ports pick the application.",
-//       "IP layer TCP segment ko IP packet mein wrap karti hai, source/destination IP ke saath. Routers destination IP dekhkar agli direction chunte hain. IP networks ke beech le jaata hai; ports application chunte hain."
-//     ),
-//     icons: ["🧭", "📦", "✉️"],
-//     items: [b("IP header\nFrom IP → To IP"), b("Inside\nTCP segment", "Andar\nTCP segment"), b("IP packet")],
-//     analogy: b("The outer address says which city the parcel goes to.", "Bahar ka address batata hai parcel kis city jayega."),
-//     remember: b("IP = between networks · Port = which app.", "IP = networks ke beech · Port = kaunsi app."),
-//     terms: [["IP packet", b("TCP segment + IP addresses.", "TCP segment + IP addresses.")], ["Router", b("Forwards packets between networks.", "Networks ke beech packets forward karta hai.")]],
-//     fields: [["Source IP", "Your current IP"], ["Destination IP", "Server IP from DNS"]],
-//   },
-//   {
-//     id: "frame", phase: "16 · Wrap for link", node: 1, layer: "datalink",
-//     packet: "Frame: [MAC header] [IP packet] [check]",
-//     title: b("Wrap the packet in a frame", "Packet ko frame mein wrap karo"),
-//     plain: b("The packet goes into a local delivery bag with the next stop's MAC.", "Packet local delivery bag mein jaata hai, agle stop ke MAC ke saath."),
-//     detail: b(
-//       "The link layer puts the IP packet inside a frame with source and destination MACs. At home the destination MAC is usually your router's, not the far server's. Wi-Fi and Ethernet frames differ, but both carry the packet.",
-//       "Link layer IP packet ko frame mein rakhti hai, source/destination MAC ke saath. Ghar mein destination MAC usually router ka hota hai, door ke server ka nahi. Wi-Fi aur Ethernet frames alag hain par dono packet carry karte hain."
-//     ),
-//     icons: ["🧾", "✉️", "🧰"],
-//     items: [b("Local header\nMAC → next-hop MAC"), b("Inside\nIP packet", "Andar\nIP packet"), b("Link frame")],
-//     analogy: b("Putting a parcel in a courier bag for the next stop.", "Parcel ko next stop ke liye courier bag mein rakhna."),
-//     remember: b("The IP packet rides inside a frame.", "IP packet frame ke andar chalta hai."),
-//     terms: [["Frame", b("The wrapper for one local link.", "Ek local link ka wrapper.")], ["Next hop", b("The next device on the path.", "Raaste ka agla device.")]],
-//   },
-//   {
-//     id: "signal", phase: "17 · Signal", node: 1, layer: "physical",
-//     packet: "Frame bits → radio / electrical / light signal",
-//     title: b("The frame becomes a signal", "Frame signal ban jaata hai"),
-//     plain: b("The bits leave your device as radio waves, electricity or light.", "Bits aapke device se radio waves, bijli ya light ban kar nikalte hain."),
-//     detail: b(
-//       "Wi-Fi uses radio waves, Ethernet uses electrical pulses and fiber uses light. This physical layer only moves bits; it does not understand addresses. The next device turns the signal back into a frame.",
-//       "Wi-Fi radio waves, Ethernet electrical pulses aur fiber light use karta hai. Physical layer sirf bits move karti hai; addresses nahi samajhti. Agla device signal ko wapas frame bana leta hai."
-//     ),
-//     icons: ["📶", "⚡", "💡"],
-//     items: [b("Wi-Fi\nRadio waves"), b("Ethernet\nElectric pulses"), b("Fiber\nLight")],
-//     analogy: b("The same words can travel by voice, phone line or a flash of light.", "Same words awaaz, phone line ya light flash se ja sakte hain."),
-//     remember: b("The physical layer moves raw bits.", "Physical layer raw bits move karti hai."),
-//     terms: [["Bit", b("A single 0 or 1.", "Ek 0 ya 1.")], ["Fiber", b("A glass cable that carries light.", "Glass cable jo light carry karta hai.")]],
-//   },
-//   {
-//     id: "routing", phase: "18 · Travel", node: 1, layer: "network",
-//     packet: "Your device → router → ISP routers → server network",
-//     title: b("Routers pass it along", "Routers aage bhejte hain"),
-//     plain: b("Routers pass the packet like a relay race, each picking the next step.", "Routers packet ko relay race ki tarah pass karte hain."),
-//     detail: b(
-//       "Your device sends a frame to the router. The router removes the frame, reads the destination IP and forwards the packet to the next network. Every hop makes a new frame with new MACs; your home router usually swaps your private IP for its public IP (NAT), while the destination IP stays the same.",
-//       "Device frame router ko bhejta hai. Router frame hatata hai, destination IP padhta hai aur packet agle network ko bhejta hai. Har hop par naya frame aur naye MAC; aapka home router aksar private IP ko public IP se badalta hai (NAT), destination IP same rehta hai."
-//     ),
-//     icons: ["💻", "🏠", "🛰️", "🗄️"],
-//     items: [b("Your laptop", "Aapka laptop"), b("Home router"), b("More routers", "Aur routers"), b("Server network")],
-//     analogy: b("A parcel changes vehicles at sorting centers, same final address.", "Parcel sorting centers par vehicle badalta hai, address wahi."),
-//     remember: b("MAC = local link · IP = whole trip.", "MAC = local link · IP = poora safar."),
-//     terms: [["Hop", b("One jump between routers.", "Routers ke beech ek jump.")], ["NAT", b("Router swaps private IP for public IP.", "Router private IP ko public IP se badalta hai.")]],
-//   },
-//   {
-//     id: "server-response", phase: "19 · Server unwraps", node: 2, layer: "none",
-//     packet: "Request arrives → app processes → HTTP response",
-//     title: b("The server unwraps the request", "Server request kholta hai"),
-//     plain: b("The server unwraps every layer in reverse until it can read your question.", "Server layers ulte order mein kholta hai jab tak sawaal na padh le."),
-//     detail: b(
-//       "The network layers process the frame and packet, TCP reassembles the byte stream and TLS decrypts it. Then the Node.js app reads the HTTP request and does its work, for example looking up the profile in a database.",
-//       "Network layers frame aur packet process karti hain, TCP byte stream jodta hai, TLS decrypt karta hai. Phir Node.js app HTTP request padhti hai aur kaam karti hai, jaise database se profile dhoondhna."
-//     ),
-//     icons: ["🧰", "✉️", "📦", "🔓", "📄"],
-//     items: [b("Frame"), b("IP packet"), b("TCP data"), b("TLS decrypts", "TLS decrypt"), b("HTTP request")],
-//     analogy: b("Opening the bag, parcel and wrapping to read the note.", "Bag, parcel aur wrapping kholkar note padhna."),
-//     remember: b("The app sees HTTP only after lower layers finish.", "Lower layers ke baad hi app ko HTTP milta hai."),
-//     terms: [["Decrypt", b("Unlock encrypted data.", "Encrypted data unlock karna.")], ["Web server", b("Software that receives HTTP requests.", "HTTP requests lene wala software.")]],
-//   },
-//   {
-//     id: "server-app", phase: "20 · App works", node: 2, layer: "none",
-//     packet: "GET /profile → check token → database → JSON",
-//     title: b("The server app does the work", "Server app kaam karti hai"),
-//     plain: b("The app checks who you are, finds your profile and prepares the answer.", "App check karti hai aap kaun ho, profile dhoondhti hai aur jawab banati hai."),
-//     detail: b(
-//       "A route such as GET /profile runs. The app usually checks the Authorization token, asks a database for the profile and turns the result into JSON. If something fails it prepares an error status instead, such as 401 (not allowed) or 404 (not found).",
-//       "GET /profile jaisa route chalta hai. App usually Authorization token check karti hai, database se profile maangti hai aur result ko JSON banati hai. Kuch fail ho toh error status banati hai, jaise 401 (allowed nahi) ya 404 (mila nahi)."
-//     ),
-//     icons: ["🪪", "🗃️", "🧾"],
-//     items: [b("Check token\nWho are you?", "Token check\nAap kaun?"), b("Database\nFind profile", "Database\nProfile dhoondo"), b("Build JSON\n+ status")],
-//     analogy: b("A clerk checks your ID, looks in the files and writes the answer.", "Clerk ID dekhta hai, files mein dhoondhta hai aur jawab likhta hai."),
-//     remember: b("Success is 200. Problems get codes like 401 or 404.", "Success 200 hai. Problem par 401 ya 404 jaise codes milte hain."),
-//     terms: [["Route", b("The URL path the app listens on.", "URL path jis par app sunti hai.")], ["Database", b("Where the app stores data.", "Jaha app data rakhti hai.")]],
-//   },
-//   {
-//     id: "response", phase: "21 · Reply travels", node: 2, layer: "none",
-//     packet: "HTTP/1.1 200 OK · Content-Type: application/json · { ... }",
-//     title: b("The answer travels back", "Jawab wapas aata hai"),
-//     plain: b("The server wraps the answer the same way and sends it back along the same road.", "Server jawab ko usi tarah wrap karke usi raaste se wapas bhejta hai."),
-//     detail: b(
-//       "The response has a status code (200 OK), headers and often a JSON body. It is encrypted by TLS, split into TCP segments, put in IP packets and frames, and routed back. Your home router uses its NAT table to pass it to your laptop's private IP.",
-//       "Response mein status code (200 OK), headers aur aksar JSON body hoti hai. TLS use encrypt karta hai, TCP segments banate hain, IP packets aur frames mein jaata hai aur route hokar wapas aata hai. Home router NAT table se use aapke laptop ke private IP tak pahunchata hai."
-//     ),
-//     icons: ["🧑‍🍳", "📦", "🏠"],
-//     items: [b("Server makes\n200 OK + data", "Server banata\n200 OK + data"), b("Wrapped again\nTLS · TCP · IP", "Phir wrap\nTLS · TCP · IP"), b("Router (NAT)\nSends to laptop", "Router (NAT)\nLaptop tak")],
-//     analogy: b("The office mails a reply to your return address.", "Office reply aapke return address par bhejta hai."),
-//     remember: b("Response = status + headers + body.", "Response = status + headers + body."),
-//     terms: [["Status code", b("Result number: 200 OK, 404 Not Found.")], ["JSON", b("A simple text format for data.", "Data ka simple text format.")]],
-//   },
-//   {
-//     id: "browser-receives", phase: "22 · Browser reads", node: 0, layer: "app",
-//     packet: "Frame → IP → TCP → TLS decrypt → response.json() → React redraws",
-//     title: b("The browser reads the answer", "Browser jawab padhta hai"),
-//     plain: b("The browser unwraps the reply, checks the rules and hands the data to your code.", "Browser reply kholta hai, rules check karta hai aur data code ko deta hai."),
-//     detail: b(
-//       "Your device unwraps frame, packet, TCP and TLS, in the same reverse order the server used. The browser checks the CORS headers: if the server did not allow your site, your code is blocked from reading the data even though it arrived. Otherwise response.json() gives your code an object, setState runs and React redraws the profile on screen.",
-//       "Aapka device frame, packet, TCP aur TLS ko usi ulte order mein kholta hai jo server ne use kiya. Browser CORS headers check karta hai: server ne aapki site allow nahi ki toh data aane ke baad bhi code use padh nahi sakta. Warna response.json() code ko object deta hai, setState chalta hai aur React screen par profile dobara draw karta hai."
-//     ),
-//     icons: ["🔓", "🛂", "⚛️", "🖼️"],
-//     items: [b("Unwrap\nFrame → TLS"), b("CORS check\nAllowed?"), b("response.json()\nData object"), b("React redraws\nProfile shows", "React redraw\nProfile dikhta hai")],
-//     analogy: b("You open the parcel, check it is really for you, then use what is inside.", "Parcel kholte ho, check karte ho aapka hi hai, phir andar ka use karte ho."),
-//     remember: b("A CORS block happens after the data has already arrived.", "CORS block data aane ke baad hota hai."),
-//     terms: [["response.json()", b("Turns JSON text into a JavaScript object.", "JSON text ko JavaScript object banata hai.")], ["State", b("Data React remembers to draw the page.", "Data jo React page draw karne ke liye yaad rakhta hai.")]],
-//   },
-//   {
-//     id: "connection-end", phase: "23 · Finish", node: 1, layer: "none",
-//     packet: "Keep-alive → reuse for the next request, or FIN → close",
-//     title: b("What happens to the connection?", "Connection ka kya hota hai?"),
-//     plain: b("The connection usually stays open for the next request, or closes politely.", "Connection aksar agli request ke liye khula rehta hai, ya tameez se band hota hai."),
-//     detail: b(
-//       "Browsers keep TCP + TLS connections open (keep-alive), so the next request skips the handshakes. HTTP/2 can send many requests at once over one connection, and HTTP/3 does the same over QUIC (which runs on UDP). When a connection is no longer needed, one side sends FIN to close it.",
-//       "Browsers TCP + TLS connection khula rakhte hain (keep-alive), isliye agli request handshakes skip karti hai. HTTP/2 ek connection par kai requests ek saath bhej sakta hai, aur HTTP/3 QUIC (UDP par) se yahi karta hai. Zarurat nahi rehne par ek side FIN bhejkar band karti hai."
-//     ),
-//     icons: ["♻️", "🚦", "👋"],
-//     items: [b("Keep-alive\nReuse it", "Keep-alive\nReuse karo"), b("HTTP/2 · 3\nMany requests", "HTTP/2 · 3\nKai requests"), b("FIN\nClose politely", "FIN\nTameez se band")],
-//     analogy: b("Leaving the phone line open between two questions instead of redialling.", "Do sawaalon ke beech phone line chalu rakhna, dobara dial nahi karna."),
-//     remember: b("Reusing a connection saves the whole handshake cost.", "Connection reuse karne se poora handshake bachta hai."),
-//     terms: [["Keep-alive", b("Keeping a connection open for reuse.", "Reuse ke liye connection khula rakhna.")], ["FIN", b("The TCP message that closes a connection.", "TCP message jo connection band karta hai.")]],
-//   },
-// ];
-
-// export const HTTP_Request_Response = {
-//   heroTitle: "Learn how computers & software actually work",
-// };
-// ALL lesson data lives in this one file. Put it in ../data/HttpRequestResponse.ts (replace the old one).
 
 export type Bi = { en: string; hi: string };
 const b = (en: string, hi: string = en): Bi => ({ en, hi });
@@ -477,7 +25,7 @@ export const HTTP_UI = {
     layerPacket: "IP packet",
     layerFrame: "Link frame",
     physicalNote: "The frame travels as electric, radio or light signals.",
-    layersHint: "Think of each layer as a wrapper around the message.",
+    layersHint: "Each layer adds its own wrapper as data travels.",
   },
   hi: {
     lessonTitle: "HTTP Request & Response",
@@ -500,7 +48,7 @@ export const HTTP_UI = {
     layerPacket: "IP packet",
     layerFrame: "Link frame",
     physicalNote: "Frame electric, radio ya light signals se travel karta hai.",
-    layersHint: "Har layer message ke around ek wrapper ki tarah hoti hai.",
+    layersHint: "Data travel karte waqt har layer apni wrapping add karti hai.",
   },
 } as const;
 
@@ -544,358 +92,161 @@ export interface HttpStep {
 
 export const HTTP_STEPS: HttpStep[] = [
   {
-    id: "scenario", phase: "1 · Meet the sides", node: 0, layer: "app",
-    packet: "Browser → https://api.example.com/profile → Server",
-    reveal: { domain: "api.example.com", protocol: "HTTPS" },
-    title: b("Meet the two sides", "Dono sides ko jaano"),
-    plain: b("Your browser asks for something, and the server sends an answer.", "Browser kuch maangta hai aur server jawab bhejta hai."),
-    detail: b(
-      "Real-life example: You write a letter at home and send it to an office. The office reads it and sends a reply. Here, your browser is the sender, the server is the office, and the internet is the delivery route. We will follow a sample request to https://api.example.com/profile; this is an example address, not a real server.",
-      "Real-life example: Aap ghar se office ko letter bhejte ho. Office letter padhta hai aur reply bhejta hai. Yahan browser sender hai, server office hai aur internet delivery ka raasta hai. Hum https://api.example.com/profile ki sample request follow karenge; yeh example address hai, real server nahi."
-    ),
-    icons: ["💻", "🌍", "🗄️"],
-    items: [b("Your laptop\nReact app", "Aapka laptop\nReact app"), b("Internet\nThe route", "Internet\nRaasta"), b("Cloud server\nNode.js app")],
-    analogy: b("Like posting a letter from home to an office in another city.", "Ghar se doosre shehar ke office ko letter bhejne jaisa."),
-    remember: b("Browser = sender · Server = receiver that replies.", "Browser = bhejne wala · Server = jawab dene wala."),
-    terms: [["Client", b("The one who asks.", "Jo maangta hai.")], ["Server", b("The one who answers.", "Jo jawab deta hai.")]],
-  },
-  {
-    id: "fetch-call", phase: "2 · Ask", node: 0, layer: "app",
+    id: "fetch-call", phase: "1 · Start the request", node: 0, layer: "app",
     packet: 'fetch("https://api.example.com/profile")',
-    title: b("Your app asks for data", "App data maangti hai"),
-    plain: b("One line of code says: \"go get me this data.\"", "Code ki ek line bolti hai: \"yeh data laao.\""),
+    reveal: { domain: "api.example.com", protocol: "HTTPS" },
+    title: b("1. Your app calls fetch()", "1. App fetch() call karti hai"),
+    plain: b("fetch() asks the browser to request a resource from a URL.", "fetch() browser se URL par resource request karne ko kehta hai."),
     detail: b(
-      "fetch(\"https://api.example.com/profile\") tells the browser the page wants data from that URL. The browser prepares the request and handles the networking. You never write code for each router or cable.",
-      "fetch(\"https://api.example.com/profile\") browser ko batata hai ki page ko is URL se data chahiye. Browser request banata hai aur networking sambhalta hai. Har router ya cable ka code nahi likhna padta."
+      "Your JavaScript runs fetch(url). The browser takes over the network work. The call can also include options such as method, headers, and body—for example, a POST request with JSON data. fetch() starts the request; it does not itself open sockets or build packets.",
+      "Aapka JavaScript fetch(url) run karta hai. Network ka kaam browser handle karta hai. fetch() ke options mein method, headers aur body ho sakte hain—jaise JSON data ke saath POST request. fetch() request start karta hai; sockets ya packets khud nahi banata."
     ),
-    icons: ["⚛️", "📞", "📨"],
-    items: [b("React page"), b("fetch(url)"), b("Profile request")],
-    analogy: b("Telling a delivery service: \"Please bring me this package.\"", "Delivery service ko bolna: \"Yeh package laao.\""),
-    remember: b("fetch() only starts the journey.", "fetch() sirf safar shuru karta hai."),
-    terms: [["URL", b("A full web address.", "Poora web address.")], ["API", b("A menu of things a server will do.", "Server ke kaamon ki menu.")]],
+    icons: ["⚛️", "🌐", "📨"],
+    items: [b("JavaScript\nfetch(url)"), b("Browser\nTakes over"), b("HTTP request\nStarts")],
+    analogy: b("You place an order with a delivery service; it handles the delivery route.", "Aap delivery service ko order dete ho; delivery ka route woh handle karti hai."),
+    remember: b("fetch() starts the request; the browser handles networking.", "fetch() request start karta hai; networking browser handle karta hai."),
+    terms: [["fetch()", b("Browser API used to make a network request.", "Network request karne wali browser API.")], ["URL", b("The address of the resource.", "Resource ka address.")]],
   },
   {
-    id: "url-parts", phase: "3 · Read address", node: 0, layer: "app",
-    packet: "https://api.example.com:443/profile",
-    title: b("The browser reads the URL", "Browser URL padhta hai"),
-    plain: b("A URL has 4 parts: how to talk, who to talk to, which door, what to ask for.", "URL ke 4 parts: kaise baat, kis se, kaunsa darwaza, kya maangna."),
+    id: "browser-prepares", phase: "2 · Prepare the request", node: 0, layer: "app",
+    packet: "URL + method + headers + cookies (when applicable) + body",
+    title: b("2. Browser prepares the HTTP request", "2. Browser HTTP request prepare karta hai"),
+    plain: b("The browser reads the URL and request options, then applies relevant browser rules.", "Browser URL aur request options read karta hai, phir relevant browser rules apply karta hai."),
     detail: b(
-      "https means the connection is protected with TLS. api.example.com is the domain name. HTTPS normally uses port 443. /profile is the path the app wants.",
-      "https ka matlab TLS se protected connection. api.example.com domain name hai. HTTPS normally port 443 use karta hai. /profile woh path hai jo app maangti hai."
+      "The browser identifies the domain, path, protocol, HTTP method, headers (such as Authorization and Content-Type), and body. Cookies may be attached according to cookie rules and fetch credentials settings. The browser also applies relevant policies such as cache, mixed-content, and CORS checks; some cross-origin requests may trigger an OPTIONS preflight.",
+      "Browser domain, path, protocol, HTTP method, headers (jaise Authorization aur Content-Type) aur body identify karta hai. Cookie rules aur fetch credentials settings ke according cookies attach ho sakti hain. Browser cache, mixed-content aur CORS jaise rules bhi apply karta hai; kuch cross-origin requests mein OPTIONS preflight hota hai."
     ),
-    icons: ["🔒", "🏷️", "🚪", "📄"],
-    items: [b("https://\nHow"), b("api.example.com\nWho"), b(":443\nWhich door"), b("/profile\nWhat")],
-    analogy: b("Like an address: city, building, room number.", "Address jaisa: city, building, room number."),
-    remember: b("Domain = name · Port = door · Path = item.", "Domain = naam · Port = darwaza · Path = cheez."),
-    terms: [["Domain", b("A human-friendly name.", "Insaan ke liye aasaan naam.")], ["Port", b("A numbered door on a computer.", "Computer ka numbered darwaza.")]],
-    fields: [["https", "Secure web protocol"], ["api.example.com", "Domain / server name"], ["443", "Default HTTPS port"], ["/profile", "Requested path"]],
+    icons: ["🔗", "🧾", "🛡️"],
+    items: [b("URL\nDomain + path"), b("Request options\nMethod + headers + body"), b("Browser rules\nCookies / CORS")],
+    analogy: b("Writing the destination, contents, and delivery instructions on a parcel.", "Parcel par address, andar ki cheez aur delivery instructions likhna."),
+    remember: b("Cookies are not always sent; browser rules and request settings decide.", "Cookies hamesha nahi jaati; browser rules aur request settings decide karte hain."),
+    terms: [["Header", b("Metadata describing the request.", "Request ke baare mein metadata.")], ["CORS", b("Browser-enforced rules for cross-origin access.", "Cross-origin access ke browser rules.")]],
+    fields: [["Method", "GET, POST, PUT, DELETE…"], ["Headers", "Authorization, Content-Type, Accept…"], ["Cookies", "Included when cookie and credentials rules allow"], ["Body", "Optional request data, e.g. JSON"]],
   },
   {
-    id: "browser-checks", phase: "4 · Browser checks", node: 0, layer: "none",
-    packet: "Cache? HTTPS rule? Cross-origin? → maybe an OPTIONS preflight",
-    title: b("The browser checks the rules first", "Browser pehle rules check karta hai"),
-    plain: b("Before going out, the browser checks its cache and its safety rules.", "Bahar jaane se pehle browser cache aur safety rules check karta hai."),
-    detail: b(
-      "The browser may already have a saved answer (cache), or know that this site must use HTTPS (HSTS). Your React app runs on localhost:3000 but the API is on api.example.com, so this is a cross-origin request. If your code adds an Authorization header, the browser first sends a small OPTIONS preflight to ask the server for permission. A missing permission is the famous \"CORS error\".",
-      "Browser ke paas saved answer (cache) ho sakta hai, ya pata ho sakta hai ki site HTTPS hi use karegi (HSTS). Aapki React app localhost:3000 par hai aur API api.example.com par, isliye yeh cross-origin request hai. Code Authorization header lagaye toh browser pehle chhota OPTIONS preflight bhejkar server se permission poochta hai. Permission na mile toh famous \"CORS error\" aata hai."
-    ),
-    icons: ["🗃️", "🛡️", "🛂"],
-    items: [b("Cache\nSaved answer?"), b("HTTPS rule\nHSTS"), b("CORS\nAllowed origin?")],
-    analogy: b("A guard checks your pass before you leave the building.", "Guard building se nikalne se pehle pass check karta hai."),
-    remember: b("CORS is enforced by the browser, not by the network.", "CORS browser enforce karta hai, network nahi."),
-    terms: [["CORS", b("Rules about which sites may read a server's data.", "Rules ki kaunsi sites server ka data padh sakti hain.")], ["Preflight", b("A permission-check sent before the real request.", "Asli request se pehle bheja permission-check.")]],
-  },
-  {
-    id: "dns", phase: "5 · Find server", node: 1, layer: "none",
-    packet: "api.example.com → 203.0.113.10 (example IP)",
+    id: "dns", phase: "3 · Find the server", node: 1, layer: "none",
+    packet: "api.example.com → DNS/cache → server IP address",
     reveal: { destIp: "203.0.113.10" },
-    title: b("Find the server's IP address", "Server ka IP dhoondo"),
-    plain: b("Computers can't use names. DNS turns a name into a number.", "Computers naam nahi samajhte. DNS naam ko number banata hai."),
+    title: b("3. DNS finds the server IP", "3. DNS server ka IP dhoondhta hai"),
+    plain: b("The browser or OS looks up the domain's IP address, unless a usable result is already cached.", "Browser ya OS domain ka IP address dhoondhta hai, jab tak usable result cache mein na ho."),
     detail: b(
-      "Computers route traffic with IP addresses; people prefer names. DNS is the internet's phone book. The browser or OS may already have the answer cached, so a fresh lookup isn't always needed. The IP shown is a documentation example.",
-      "Computers IP se traffic route karte hain; log naam yaad rakhte hain. DNS internet ki phone book hai. Browser ya OS ke cache mein answer ho sakta hai, isliye har baar naya lookup nahi hota. Yeh IP sirf example hai."
+      "The browser or operating system may first check DNS caches. If no valid cached answer is available, it sends a DNS query to resolve the domain to an IP address. DNS returns an address the device can connect to. A fresh DNS query is not required for every HTTP request. The IP shown here is an example address.",
+      "Browser ya OS pehle DNS cache check kar sakta hai. Valid cached answer na mile toh domain ka IP resolve karne ke liye DNS query bhejta hai. DNS aisa address return karta hai jisse device connect kar sake. Har HTTP request par nayi DNS query zaroori nahi. Yahan dikhaya IP example hai."
     ),
     icons: ["🏷️", "📒", "🔢"],
-    items: [b("Name\napi.example.com"), b("DNS lookup"), b("IP address\n203.0.113.10")],
-    analogy: b("Searching a name in your contacts to get the phone number.", "Contacts mein naam search karke number nikalna."),
-    remember: b("DNS: name → IP.", "DNS: naam → IP."),
-    terms: [["DNS", b("The internet's phone book.", "Internet ki phone book.")], ["IP address", b("A device's number on a network.", "Network par device ka number.")]],
+    items: [b("Domain\napi.example.com"), b("DNS cache / query"), b("IP address\n203.0.113.10 (example)")],
+    analogy: b("Looking up a person's name in contacts to find their number.", "Contacts mein naam search karke number nikalna."),
+    remember: b("DNS maps a domain name to an IP; cache can skip a new lookup.", "DNS domain ko IP se map karta hai; cache nayi lookup skip kar sakta hai."),
+    terms: [["DNS", b("System that resolves domain names to IP addresses.", "Domain name ko IP address mein resolve karne wala system.")], ["DNS cache", b("A saved DNS result used until it expires.", "Saved DNS result jo expiry tak use hota hai.")]],
   },
   {
-    id: "gather-criteria", phase: "6 · Addresses", node: 0, layer: "none",
-    packet: "Client (temporary port) → Server IP : 443",
+    id: "serialize", phase: "4 · Prepare bytes", node: 0, layer: "app",
+    packet: "HTTP request → encoded bytes → OS networking stack",
+    title: b("4. Request becomes bytes", "4. Request bytes mein convert hoti hai"),
+    plain: b("The browser encodes the HTTP request as bytes and hands data to the networking stack.", "Browser HTTP request ko bytes mein encode karke networking stack ko data deta hai."),
+    detail: b(
+      "The browser's networking implementation turns the HTTP request line, headers, and body into a byte representation. The operating system's networking stack then helps move data through the network interfaces and protocols. The exact internals differ by browser, operating system, and HTTP version.",
+      "Browser ka networking implementation HTTP request line, headers aur body ko bytes ki form mein encode karta hai. OS ka networking stack data ko network interface aur protocols ke through bhejne mein help karta hai. Exact internal process browser, OS aur HTTP version ke hisaab se differ kar sakta hai."
+    ),
+    icons: ["📄", "🔢", "🖥️"],
+    items: [b("HTTP request\nText + body"), b("Encode\nBytes"), b("OS network stack")],
+    analogy: b("Turning a written message into a format the delivery system can carry.", "Written message ko aise format mein badalna jise delivery system carry kar sake."),
+    remember: b("Networking carries bytes, not JavaScript objects.", "Networking bytes carry karta hai, JavaScript objects nahi."),
+    terms: [["Serialize / encode", b("Convert structured data into a transferable representation.", "Structured data ko transferable format mein convert karna.")], ["Network stack", b("OS components that handle network communication.", "OS ke components jo network communication handle karte hain.")]],
+  },
+  {
+    id: "tcp-handshake", phase: "5 · Establish transport", node: 1, layer: "transport",
+    packet: "TCP: SYN → SYN-ACK → ACK",
     reveal: { destPort: "443" },
-    title: b("Prepare 'from' and 'to'", "'Kaha se' aur 'kaha tak' ready karo"),
-    plain: b("Like a parcel, the connection needs a sender and a receiver, each with IP + port.", "Parcel ki tarah sender aur receiver chahiye, dono ke IP + port."),
+    title: b("5. TCP connection is established", "5. TCP connection establish hota hai"),
+    plain: b("For HTTP over TCP, the client and server establish a reliable, ordered connection.", "TCP par chalne wale HTTP ke liye client aur server reliable, ordered connection establish karte hain."),
     detail: b(
-      "The destination is the server IP with port 443. Your OS supplies a source IP and usually picks a temporary source port. React's localhost:3000 is not the source port of this API request.",
-      "Destination server IP + port 443 hai. OS source IP deta hai aur usually temporary source port chunta hai. React ka localhost:3000 is API request ka source port nahi hota."
+      "For HTTP/1.1 and HTTP/2 over TCP, a new connection commonly uses the three-way handshake: SYN, SYN-ACK, ACK. TCP provides reliable, ordered delivery of a byte stream. A connection may be reused for later requests, so a new TCP handshake is not required for every request. HTTP/3 uses QUIC over UDP instead of TCP.",
+      "TCP par HTTP/1.1 aur HTTP/2 ke liye naya connection aam taur par three-way handshake use karta hai: SYN, SYN-ACK, ACK. TCP bytes ko reliable aur ordered tarike se deliver karta hai. Connection baad ki requests ke liye reuse ho sakta hai, isliye har request par naya TCP handshake zaroori nahi. HTTP/3 TCP ke bajay UDP par QUIC use karta hai."
     ),
-    icons: ["💻", "🗄️"],
-    items: [b("Your device\nIP + temporary port", "Aapka device\nIP + temporary port"), b("Server\nIP + port 443")],
-    analogy: b("A return address and a delivery address on a parcel.", "Parcel par sender aur receiver ka address."),
-    remember: b("Dev-server port ≠ network source port.", "Dev-server port ≠ network source port."),
-    terms: [["Source", b("Where data starts.", "Jaha data shuru hota hai.")], ["Destination", b("Where data must arrive.", "Jaha data pahunchna hai.")]],
-    fields: [["Client IP", "Your device's IP"], ["Client port", "Temporary port"], ["Server IP", "Found via DNS"], ["Server port", "443 for HTTPS"]],
+    icons: ["👋", "🤝", "🔗"],
+    items: [b("Client\nSYN"), b("Server\nSYN-ACK"), b("Client\nACK · connected")],
+    analogy: b("Both sides confirm they are ready before talking.", "Baat shuru karne se pehle dono sides confirm karti hain ki ready hain."),
+    remember: b("TCP handshake is for a connection, not necessarily every request.", "TCP handshake connection ke liye hota hai, har request ke liye zaroori nahi."),
+    terms: [["SYN", b("TCP message that starts connection setup.", "TCP message jo connection setup start karta hai.")], ["MSS", b("Maximum TCP payload size for a segment.", "Ek TCP segment ke payload ka maximum size.")]],
+    fields: [["Handshake", "SYN → SYN-ACK → ACK"], ["TCP role", "Reliable, ordered byte stream"], ["Reuse", "Existing connection can carry more requests"], ["HTTP/3", "Uses QUIC over UDP, not TCP"]],
   },
   {
-    id: "mac-arp", phase: "7 · Local address", node: 1, layer: "datalink",
-    packet: "ARP: \"Who has my gateway's IP?\" → gateway MAC",
-    title: b("Find the next device's MAC", "Agle device ka MAC dhoondo"),
-    plain: b("At home, delivery uses hardware names (MAC). ARP asks \"who owns this IP?\"", "Ghar mein delivery hardware naam (MAC) se hoti hai. ARP poochta hai \"yeh IP kiska?\""),
+    id: "tls-handshake", phase: "6 · Secure the connection", node: 1, layer: "tls",
+    packet: "HTTPS: TLS handshake → verify certificate → establish keys",
+    title: b("6. TLS secures HTTPS", "6. TLS HTTPS ko secure karta hai"),
+    plain: b("For HTTPS, TLS negotiates encryption and helps verify the server's identity.", "HTTPS mein TLS encryption negotiate karta hai aur server ki identity verify karne mein help karta hai."),
     detail: b(
-      "This happens before your first packet leaves (the answer is often already cached). To send a frame on Wi-Fi or Ethernet you need the next device's MAC. For an outside server, that device is usually your default gateway (router). On IPv4, ARP asks which MAC owns the gateway's IP. IPv6 uses Neighbor Discovery instead.",
-      "Yeh pehla packet nikalne se pehle hota hai (answer aksar cache mein hota hai). Wi-Fi ya Ethernet par frame bhejne ke liye agle device ka MAC chahiye. Bahar ke server ke liye woh usually default gateway (router) hota hai. IPv4 mein ARP gateway IP ka MAC poochta hai. IPv6 mein Neighbor Discovery hota hai."
+      "After TCP is established, HTTPS normally performs a TLS handshake. The client and server negotiate cryptographic settings and establish session keys. The browser validates the server certificate and hostname. After setup, HTTP data is protected by TLS encryption and integrity checks. Existing secure connections may be reused; TLS setup does not necessarily happen for every request.",
+      "TCP establish hone ke baad HTTPS mein aam taur par TLS handshake hota hai. Client aur server cryptographic settings negotiate karke session keys establish karte hain. Browser server certificate aur hostname validate karta hai. Setup ke baad HTTP data TLS encryption aur integrity checks se protected hota hai. Existing secure connection reuse ho sakta hai; har request par TLS setup zaroori nahi."
     ),
-    icons: ["🏠", "🔔", "📡"],
-    items: [b("Laptop knows\nGateway IP", "Laptop ko pata\nGateway IP"), b("ARP asks\n\"Who has it?\"", "ARP poochta\n\"Kiska hai?\""), b("Router replies\nIts MAC", "Router batata\nApna MAC")],
-    analogy: b("You know the house number, ask which doorbell is theirs.", "Ghar ka number pata hai, doorbell poochte ho."),
-    remember: b("ARP finds a MAC for a local IPv4 address.", "ARP local IPv4 ka MAC dhoondhta hai."),
-    terms: [["MAC address", b("A hardware ID on a network card.", "Network card ka hardware ID.")], ["Gateway", b("Your router, the exit door.", "Aapka router, bahar ka darwaza.")]],
-    fields: [["ARP knows", "Local IPv4 address"], ["ARP finds", "That device's MAC"], ["Usual target", "Default gateway"]],
+    icons: ["🤝", "📜", "🔐"],
+    items: [b("TLS handshake\nNegotiate"), b("Certificate\nVerify server"), b("Session keys\nSecure channel")],
+    analogy: b("Checking the receiver's ID and agreeing on a private code before exchanging letters.", "Letter exchange se pehle receiver ki ID check karna aur secret code decide karna."),
+    remember: b("TLS protects HTTP data in transit; HTTPS means HTTP over TLS.", "TLS travel ke dauran HTTP data protect karta hai; HTTPS ka matlab HTTP over TLS."),
+    terms: [["TLS", b("Protocol that encrypts and protects data in transit.", "Data ko transit mein encrypt aur protect karne wala protocol.")], ["Certificate", b("A digital identity document for a server.", "Server ki digital identity document.")]],
   },
   {
-    id: "tcp-handshake", phase: "8 · Connect", node: 1, layer: "transport",
-    packet: "SYN → SYN + ACK → ACK",
-    title: b("TCP says hello first", "TCP pehle hello bolta hai"),
-    plain: b("Before sending data, both computers say hello 3 times to check the line.", "Data se pehle dono computers 3 baar hello bolte hain."),
+    id: "tcp-segments", phase: "7 · Split the data", node: 1, layer: "transport",
+    packet: "Application/TLS bytes → TCP segments",
+    title: b("7. TCP splits the byte stream into segments", "7. TCP byte stream ko segments mein divide karta hai"),
+    plain: b("TCP sends data in segments and adds ports and delivery-control information.", "TCP data ko segments mein bhejta hai aur ports aur delivery-control information add karta hai."),
     detail: b(
-      "Every message below is itself wrapped in an IP packet and a frame. A new TCP connection starts with a three-way handshake: SYN starts, SYN-ACK replies, ACK finishes. TCP then delivers data reliably and in order. If a suitable connection is already open, the browser reuses it.",
-      "Neeche ka har message bhi IP packet aur frame mein wrap hota hai. Naya TCP connection three-way handshake se shuru hota hai: SYN shuru, SYN-ACK reply, ACK complete. Phir TCP data reliable aur order mein deta hai. Connection open ho toh browser reuse karta hai."
+      "TCP divides the outgoing byte stream into segments sized according to the path's MSS and other conditions. The TCP header includes source and destination ports, sequence and acknowledgment numbers, and flags. These fields help deliver data to the right application, keep bytes in order, and recover from loss. With HTTPS, the TCP payload carries TLS-protected data.",
+      "TCP outgoing byte stream ko path ke MSS aur doosri conditions ke hisaab se segments mein divide karta hai. TCP header mein source/destination ports, sequence aur acknowledgment numbers, aur flags hote hain. Yeh fields data ko sahi application tak pahunchane, bytes order mein rakhne aur loss recover karne mein help karte hain. HTTPS mein TCP payload TLS-protected data carry karta hai."
     ),
-    icons: ["👋", "🤝", "✅"],
-    items: [b("1 · SYN\n\"Can we connect?\"", "1 · SYN\n\"Connect karein?\""), b("2 · SYN-ACK\n\"Yes, I hear you\"", "2 · SYN-ACK\n\"Haan, sun liya\""), b("3 · ACK\n\"Great, ready\"", "3 · ACK\n\"Theek, ready\"")],
-    analogy: b("\"Can you hear me?\" → \"Yes, can you?\" → \"Yes.\"", "\"Awaaz aa rahi?\" → \"Haan, tumhari?\" → \"Haan.\""),
-    remember: b("TCP = reliable, ordered delivery.", "TCP = reliable, ordered delivery."),
-    terms: [["TCP", b("Rules for reliable delivery.", "Reliable delivery ke rules.")], ["Handshake", b("A short greeting to start.", "Shuru karne ka greeting.")]],
+    icons: ["🔢", "📦", "🧩"],
+    items: [b("Bytes\nStream"), b("TCP header\nPorts + sequence"), b("TCP segment")],
+    analogy: b("Breaking a long message into numbered pieces so the receiver can put them in order.", "Lambe message ko numbered pieces mein todna taaki receiver sahi order mein jod sake."),
+    remember: b("Ports identify applications; sequence numbers help order the byte stream.", "Ports applications identify karte hain; sequence numbers byte stream ka order maintain karte hain."),
+    terms: [["Source port", b("Port used by the sending application.", "Bhejne wali application ka port.")], ["Destination port", b("Port of the receiving service, often 443 for HTTPS.", "Receiving service ka port; HTTPS ke liye aksar 443.")], ["Sequence number", b("Tracks byte positions in the stream.", "Stream mein byte positions track karta hai.")]],
+    fields: [["Source port", "Temporary client-side port"], ["Destination port", "Server port (commonly 443 for HTTPS)"], ["Sequence / ACK", "Track byte order and acknowledgments"], ["Flags", "Connection and control signals"]],
   },
   {
-    id: "tls-handshake", phase: "9 · Protect", node: 1, layer: "tls",
-    packet: "TLS handshake → certificate check + secret keys",
-    title: b("TLS makes HTTPS private", "TLS HTTPS ko private banata hai"),
-    plain: b("The server shows an ID card; if it's valid, both agree on a secret code.", "Server ID card dikhata hai; sahi ho toh dono secret code agree karte hain."),
+    id: "ip-packets", phase: "8 · Address the destination", node: 1, layer: "network",
+    packet: "TCP segment → IP packet [source IP + destination IP]",
+    reveal: { sourceIp: "Client IP", destIp: "203.0.113.10" },
+    title: b("8. IP wraps each segment in a packet", "8. IP har segment ko packet mein wrap karta hai"),
+    plain: b("IP adds source and destination IP addresses so routers can forward the packet.", "IP source aur destination IP addresses add karta hai taaki routers packet forward kar sakein."),
     detail: b(
-      "The browser and server negotiate security settings and keys. The server sends a certificate; the browser checks it is trusted, valid and matches the domain. After setup, application data is encrypted.",
-      "Browser aur server security settings aur keys agree karte hain. Server certificate bhejta hai; browser check karta hai ki trusted, valid aur domain se match hai. Setup ke baad data encrypt hota hai."
+      "The IP layer encapsulates the TCP segment inside an IP packet. The IP header contains source and destination IP addresses and other routing-related fields. Routers use the destination IP address to decide where to forward the packet. The source address shown in real networks may be changed by NAT along the path.",
+      "IP layer TCP segment ko IP packet ke andar encapsulate karti hai. IP header mein source aur destination IP addresses aur routing se related fields hote hain. Routers destination IP dekhkar decide karte hain packet kahan forward karna hai. Real network mein NAT ki wajah se source address path par change ho sakta hai."
     ),
-    icons: ["🔐", "📜", "🗝️"],
-    items: [b("Browser\n\"Let's secure this\"", "Browser\n\"Secure karein\""), b("Server\nCertificate"), b("Both sides\nSecret keys", "Dono sides\nSecret keys")],
-    analogy: b("Checking someone's ID before sharing a private note.", "Private note dene se pehle ID check karna."),
-    remember: b("TLS protects data; the certificate proves identity.", "TLS data protect karta hai; certificate identity prove karta hai."),
-    terms: [["TLS", b("Makes HTTPS private.", "HTTPS ko private banata hai.")], ["Certificate", b("A server's digital ID card.", "Server ka digital ID card.")]],
+    icons: ["📦", "🏷️", "🧭"],
+    items: [b("TCP segment"), b("IP header\nSource + destination IP"), b("IP packet")],
+    analogy: b("Putting the parcel inside a package with the full destination address.", "Parcel ko full destination address wale package mein rakhna."),
+    remember: b("IP addresses guide the packet across networks; ports identify the application.", "IP addresses packet ko networks ke across guide karte hain; ports application identify karte hain."),
+    terms: [["IP packet", b("Network-layer unit carrying data and IP addresses.", "Network-layer unit jisme data aur IP addresses hote hain.")], ["NAT", b("A device translates IP addresses, commonly at a router.", "Device jo IP addresses translate karta hai, aksar router par.")]],
   },
   {
-    id: "build-request", phase: "10 · Write message", node: 0, layer: "app",
-    packet: "GET /profile · Host: api.example.com · headers",
-    title: b("Build the HTTP request", "HTTP request banao"),
-    plain: b("The browser fills a small form: action, item, and extra notes.", "Browser chhota form bharta hai: action, cheez, extra notes."),
+    id: "link-frames", phase: "9 · Send over the local link", node: 1, layer: "datalink",
+    packet: "IP packet → Ethernet / Wi-Fi frame [source MAC + destination MAC]",
+    title: b("9. Ethernet or Wi-Fi adds a frame", "9. Ethernet ya Wi-Fi frame add karta hai"),
+    plain: b("The local link wraps the IP packet in a frame addressed to the next device on that link.", "Local link IP packet ko frame mein wrap karta hai jo us link ke next device ko addressed hota hai."),
     detail: b(
-      "The message has a method (GET = read), a path (/profile) and headers with extra details. An app may add an Authorization token; cookies are sent only when allowed. A GET usually has no body. None of this is an IP or MAC address.",
-      "Message mein method (GET = padho), path (/profile) aur extra headers hote hain. App Authorization token laga sakti hai; cookies tabhi jaati hain jab allowed ho. GET mein aksar body nahi hoti. Yeh IP ya MAC nahi hai."
+      "On Ethernet or Wi-Fi, the data-link layer places the IP packet inside a frame. The frame carries link-layer addresses such as source and destination MAC addresses. If the server is outside the local network, the destination MAC is usually the default gateway/router's MAC—not the remote server's MAC. The exact framing differs between Ethernet and Wi-Fi.",
+      "Ethernet ya Wi-Fi par data-link layer IP packet ko frame ke andar rakhti hai. Frame mein source aur destination MAC jaise link-layer addresses hote hain. Agar server local network ke bahar hai, toh destination MAC usually default gateway/router ka hota hai—remote server ka MAC nahi. Ethernet aur Wi-Fi ki framing mein differences hote hain."
     ),
-    icons: ["🏷️", "📄", "🧾"],
-    items: [b("Method\nGET"), b("Path\n/profile"), b("Headers\nExtra details")],
-    analogy: b("A form: request type, item name, optional notes.", "Form: request type, item naam, optional notes."),
-    remember: b("HTTP says what the client wants done.", "HTTP batata hai client kya karwana chahta hai."),
-    terms: [["Method", b("The action: GET = read.", "Action: GET = padho.")], ["Header", b("Extra info on a message.", "Message ki extra jankari.")]],
-    fields: [["Method", "GET, ask to read data"], ["Path", "/profile"], ["Headers", "Extra request info"], ["Authorization", "Bearer token, if app adds it"]],
+    icons: ["🌐", "🏷️", "📶"],
+    items: [b("IP packet"), b("Frame header\nMAC addresses"), b("Ethernet / Wi-Fi\nFrame")],
+    analogy: b("Putting the addressed package into the local delivery vehicle for the next stop.", "Address wale package ko next stop tak le jaane wali local vehicle mein rakhna."),
+    remember: b("MAC addresses are for the local link; IP addresses guide the wider trip.", "MAC addresses local link ke liye hain; IP addresses poore route ko guide karte hain."),
+    terms: [["MAC address", b("Link-layer address used on a local network segment.", "Local network segment par use hone wala link-layer address.")], ["Default gateway", b("The router used to reach other networks.", "Doosre networks tak pahunchne ke liye use hone wala router.")]],
   },
   {
-    id: "bytes", phase: "11 · Make bytes", node: 0, layer: "tls",
-    packet: "HTTP message → bytes → (TLS encrypts)",
-    title: b("The message becomes bytes", "Message bytes banta hai"),
-    plain: b("Computers only understand 1s and 0s, so text becomes bytes, then gets locked.", "Computers sirf 1 aur 0 samajhte hain, isliye text bytes banta hai, phir lock hota hai."),
+    id: "routing-hops", phase: "10 · Travel to the server", node: 1, layer: "network",
+    packet: "Device → router → next hops … → server network → server",
+    title: b("10. Routers forward packets hop by hop", "10. Routers packets ko hop-by-hop forward karte hain"),
+    plain: b("Each router forwards the IP packet onward and builds a new local frame for the next link.", "Har router IP packet ko aage forward karta hai aur next link ke liye naya local frame banata hai."),
     detail: b(
-      "The browser serializes the request into bytes (groups of 8 bits). For HTTPS, TLS then encrypts them into TLS records, and TCP carries those records. Turning text into bytes and encrypting are two different ideas.",
-      "Browser request ko bytes (8 bits ke groups) mein badalta hai. HTTPS mein TLS unhe encrypt karke TLS records banata hai, jinhe TCP carry karta hai. Bytes banana aur encrypt karna alag concepts hain."
+      "When a router receives a frame, it removes the link-layer frame, checks the IP packet, and chooses the next hop using its routing table. It then wraps the packet in a new frame for the outgoing link. Therefore, MAC addresses usually change at every routed hop, while the source and destination IP addresses generally remain the same end-to-end (apart from changes such as NAT). The server's network finally delivers the packet to the server.",
+      "Router frame receive karke link-layer frame remove karta hai, IP packet check karta hai aur routing table se next hop choose karta hai. Phir outgoing link ke liye packet ko naye frame mein wrap karta hai. Isliye routed hop par MAC addresses usually change hote hain, jabki source aur destination IP generally end-to-end same rehte hain (NAT jaise changes ko chhodkar). Aakhir mein server ka network packet server tak pahunchata hai."
     ),
-    icons: ["📝", "🔢", "🔒"],
-    items: [b("Readable\nGET /profile"), b("Bytes\n0101…"), b("Encrypted\nTLS data")],
-    analogy: b("Writing a note, then sealing it in a locked box.", "Note likhna, phir locked box mein rakhna."),
-    remember: b("Bytes = form. Encryption = protection.", "Bytes = form. Encryption = protection."),
-    terms: [["Byte", b("8 bits of data.", "Data ke 8 bits.")], ["Encryption", b("Scrambling so only the receiver can read.", "Scramble karna taaki sirf receiver padh sake.")]],
-  },
-  {
-    id: "handoff-os", phase: "12 · Hand off", node: 0, layer: "none",
-    packet: "Browser → Operating system → Network card",
-    title: b("The browser hands work to the OS", "Browser kaam OS ko deta hai"),
-    plain: b("The browser writes the letter; the OS and network card send it out.", "Browser letter likhta hai; OS aur network card bhejte hain."),
-    detail: b(
-      "The browser's networking code works with the OS network stack. The OS and network interface put data on Wi-Fi or Ethernet. The exact split varies by browser and platform.",
-      "Browser ka networking code OS ke network stack ke saath kaam karta hai. OS aur network interface data Wi-Fi ya Ethernet par bhejte hain. Exact division platform par depend karta hai."
-    ),
-    icons: ["🌐", "⚙️", "📶"],
-    items: [b("Browser\nHTTP request"), b("OS\nTCP/IP"), b("Network card\nWi-Fi / Ethernet")],
-    analogy: b("You write a letter, the post office delivers it.", "Aap letter likhte ho, post office deliver karta hai."),
-    remember: b("The browser doesn't control the Wi-Fi radio.", "Browser Wi-Fi radio control nahi karta."),
-    terms: [["OS", b("Windows, macOS, Linux, Android…")], ["Network card", b("Hardware that sends signals.", "Signals bhejne wala hardware.")]],
-  },
-  {
-    id: "chunking", phase: "13 · Split", node: 1, layer: "transport",
-    packet: "Byte stream → TCP segments",
-    title: b("Big data travels in pieces", "Bada data tukdon mein jaata hai"),
-    plain: b("Big data is cut into small pieces and rebuilt at the other end.", "Bade data ke chhote tukde bante hain aur doosri taraf jud jaate hain."),
-    detail: b(
-      "A long response, like a photo, is carried in many TCP segments. MSS is the biggest TCP payload in a segment; MTU is the biggest packet a link can carry. A small request may fit in one segment.",
-      "Bada response, jaise photo, kai TCP segments mein jaata hai. MSS segment ka max TCP payload hai; MTU link ka max packet size. Chhoti request ek segment mein aa jaati hai."
-    ),
-    icons: ["📚", "🧩", "✅"],
-    items: [b("Big data", "Bada data"), b("Piece 1 · 2 · 3", "Tukda 1 · 2 · 3"), b("Rebuilt at receiver", "Receiver par jud gaya")],
-    analogy: b("Sending a big book as several parcels.", "Badi book ko kai parcels mein bhejna."),
-    remember: b("MSS = TCP payload limit · MTU = link limit.", "MSS = TCP payload limit · MTU = link limit."),
-    terms: [["Segment", b("One piece of TCP data.", "TCP data ka ek tukda.")], ["MTU", b("Biggest packet a link carries.", "Link ka sabse bada packet.")]],
-  },
-  {
-    id: "tcp-segment", phase: "14 · Label pieces", node: 1, layer: "transport",
-    packet: "TCP header + data = TCP segment",
-    title: b("TCP adds ports and numbers", "TCP ports aur numbers lagata hai"),
-    plain: b("TCP sticks a label on each piece: which door, and which number in order.", "TCP har tukde par label lagata hai: kaunsa darwaza, kaunsa number."),
-    detail: b(
-      "The TCP header holds source and destination ports and a sequence number. Sequence numbers let the receiver put bytes in order and spot missing ones. Flags like SYN and ACK control the connection; normal data segments don't all carry SYN.",
-      "TCP header mein source/destination ports aur sequence number hota hai. Sequence number se receiver bytes ko order mein jodta hai aur missing bytes pakadta hai. SYN/ACK flags connection control karte hain; har data segment mein SYN nahi hota."
-    ),
-    icons: ["🏷️", "📄", "📦"],
-    items: [b("TCP header\nPorts + order"), b("Data\nBytes"), b("TCP segment")],
-    analogy: b("A parcel label with door number and tracking number.", "Parcel label: darwaza aur tracking number."),
-    remember: b("Ports find the app; sequence numbers keep order.", "Ports app dhoondhte hain; sequence numbers order rakhte hain."),
-    terms: [["Header", b("The label in front of data.", "Data ke aage ka label.")], ["Sequence no.", b("Tells the correct order.", "Sahi order batata hai.")]],
-    fields: [["Source port", "Temporary client port"], ["Destination port", "443"], ["Sequence number", "Byte position"], ["Flags", "Connection control (ACK…)"]],
-  },
-  {
-    id: "ip-packet", phase: "15 · Add addresses", node: 1, layer: "network",
-    packet: "IP header (source IP + destination IP) + TCP segment",
-    title: b("IP adds the destination address", "IP destination address lagata hai"),
-    plain: b("IP adds the big shipping address so routers know where to send it.", "IP bada shipping address lagata hai taaki routers ko pata ho."),
-    detail: b(
-      "The IP layer wraps the TCP segment in an IP packet with source and destination IPs. Routers read the destination IP to choose the next direction. IP moves packets between networks; ports pick the application.",
-      "IP layer TCP segment ko IP packet mein wrap karti hai, source/destination IP ke saath. Routers destination IP dekhkar agli direction chunte hain. IP networks ke beech le jaata hai; ports application chunte hain."
-    ),
-    icons: ["🧭", "📦", "✉️"],
-    items: [b("IP header\nFrom IP → To IP"), b("Inside\nTCP segment", "Andar\nTCP segment"), b("IP packet")],
-    analogy: b("The outer address says which city the parcel goes to.", "Bahar ka address batata hai parcel kis city jayega."),
-    remember: b("IP = between networks · Port = which app.", "IP = networks ke beech · Port = kaunsi app."),
-    terms: [["IP packet", b("TCP segment + IP addresses.", "TCP segment + IP addresses.")], ["Router", b("Forwards packets between networks.", "Networks ke beech packets forward karta hai.")]],
-    fields: [["Source IP", "Your current IP"], ["Destination IP", "Server IP from DNS"]],
-  },
-  {
-    id: "frame", phase: "16 · Wrap for link", node: 1, layer: "datalink",
-    packet: "Frame: [MAC header] [IP packet] [check]",
-    title: b("Wrap the packet in a frame", "Packet ko frame mein wrap karo"),
-    plain: b("The packet goes into a local delivery bag with the next stop's MAC.", "Packet local delivery bag mein jaata hai, agle stop ke MAC ke saath."),
-    detail: b(
-      "The link layer puts the IP packet inside a frame with source and destination MACs. At home the destination MAC is usually your router's, not the far server's. Wi-Fi and Ethernet frames differ, but both carry the packet.",
-      "Link layer IP packet ko frame mein rakhti hai, source/destination MAC ke saath. Ghar mein destination MAC usually router ka hota hai, door ke server ka nahi. Wi-Fi aur Ethernet frames alag hain par dono packet carry karte hain."
-    ),
-    icons: ["🧾", "✉️", "🧰"],
-    items: [b("Local header\nMAC → next-hop MAC"), b("Inside\nIP packet", "Andar\nIP packet"), b("Link frame")],
-    analogy: b("Putting a parcel in a courier bag for the next stop.", "Parcel ko next stop ke liye courier bag mein rakhna."),
-    remember: b("The IP packet rides inside a frame.", "IP packet frame ke andar chalta hai."),
-    terms: [["Frame", b("The wrapper for one local link.", "Ek local link ka wrapper.")], ["Next hop", b("The next device on the path.", "Raaste ka agla device.")]],
-  },
-  {
-    id: "signal", phase: "17 · Signal", node: 1, layer: "physical",
-    packet: "Frame bits → radio / electrical / light signal",
-    title: b("The frame becomes a signal", "Frame signal ban jaata hai"),
-    plain: b("The bits leave your device as radio waves, electricity or light.", "Bits aapke device se radio waves, bijli ya light ban kar nikalte hain."),
-    detail: b(
-      "Wi-Fi uses radio waves, Ethernet uses electrical pulses and fiber uses light. This physical layer only moves bits; it does not understand addresses. The next device turns the signal back into a frame.",
-      "Wi-Fi radio waves, Ethernet electrical pulses aur fiber light use karta hai. Physical layer sirf bits move karti hai; addresses nahi samajhti. Agla device signal ko wapas frame bana leta hai."
-    ),
-    icons: ["📶", "⚡", "💡"],
-    items: [b("Wi-Fi\nRadio waves"), b("Ethernet\nElectric pulses"), b("Fiber\nLight")],
-    analogy: b("The same words can travel by voice, phone line or a flash of light.", "Same words awaaz, phone line ya light flash se ja sakte hain."),
-    remember: b("The physical layer moves raw bits.", "Physical layer raw bits move karti hai."),
-    terms: [["Bit", b("A single 0 or 1.", "Ek 0 ya 1.")], ["Fiber", b("A glass cable that carries light.", "Glass cable jo light carry karta hai.")]],
-  },
-  {
-    id: "routing", phase: "18 · Travel", node: 1, layer: "network",
-    packet: "Your device → router → ISP routers → server network",
-    title: b("Routers pass it along", "Routers aage bhejte hain"),
-    plain: b("Routers pass the packet like a relay race, each picking the next step.", "Routers packet ko relay race ki tarah pass karte hain."),
-    detail: b(
-      "Your device sends a frame to the router. The router removes the frame, reads the destination IP and forwards the packet to the next network. Every hop makes a new frame with new MACs; your home router usually swaps your private IP for its public IP (NAT), while the destination IP stays the same.",
-      "Device frame router ko bhejta hai. Router frame hatata hai, destination IP padhta hai aur packet agle network ko bhejta hai. Har hop par naya frame aur naye MAC; aapka home router aksar private IP ko public IP se badalta hai (NAT), destination IP same rehta hai."
-    ),
-    icons: ["💻", "🏠", "🛰️", "🗄️"],
-    items: [b("Your laptop", "Aapka laptop"), b("Home router"), b("More routers", "Aur routers"), b("Server network")],
-    analogy: b("A parcel changes vehicles at sorting centers, same final address.", "Parcel sorting centers par vehicle badalta hai, address wahi."),
-    remember: b("MAC = local link · IP = whole trip.", "MAC = local link · IP = poora safar."),
-    terms: [["Hop", b("One jump between routers.", "Routers ke beech ek jump.")], ["NAT", b("Router swaps private IP for public IP.", "Router private IP ko public IP se badalta hai.")]],
-  },
-  {
-    id: "server-response", phase: "19 · Server unwraps", node: 2, layer: "none",
-    packet: "Request arrives → app processes → HTTP response",
-    title: b("The server unwraps the request", "Server request kholta hai"),
-    plain: b("The server unwraps every layer in reverse until it can read your question.", "Server layers ulte order mein kholta hai jab tak sawaal na padh le."),
-    detail: b(
-      "The network layers process the frame and packet, TCP reassembles the byte stream and TLS decrypts it. Then the Node.js app reads the HTTP request and does its work, for example looking up the profile in a database.",
-      "Network layers frame aur packet process karti hain, TCP byte stream jodta hai, TLS decrypt karta hai. Phir Node.js app HTTP request padhti hai aur kaam karti hai, jaise database se profile dhoondhna."
-    ),
-    icons: ["🧰", "✉️", "📦", "🔓", "📄"],
-    items: [b("Frame"), b("IP packet"), b("TCP data"), b("TLS decrypts", "TLS decrypt"), b("HTTP request")],
-    analogy: b("Opening the bag, parcel and wrapping to read the note.", "Bag, parcel aur wrapping kholkar note padhna."),
-    remember: b("The app sees HTTP only after lower layers finish.", "Lower layers ke baad hi app ko HTTP milta hai."),
-    terms: [["Decrypt", b("Unlock encrypted data.", "Encrypted data unlock karna.")], ["Web server", b("Software that receives HTTP requests.", "HTTP requests lene wala software.")]],
-  },
-  {
-    id: "server-app", phase: "20 · App works", node: 2, layer: "none",
-    packet: "GET /profile → check token → database → JSON",
-    title: b("The server app does the work", "Server app kaam karti hai"),
-    plain: b("The app checks who you are, finds your profile and prepares the answer.", "App check karti hai aap kaun ho, profile dhoondhti hai aur jawab banati hai."),
-    detail: b(
-      "A route such as GET /profile runs. The app usually checks the Authorization token, asks a database for the profile and turns the result into JSON. If something fails it prepares an error status instead, such as 401 (not allowed) or 404 (not found).",
-      "GET /profile jaisa route chalta hai. App usually Authorization token check karti hai, database se profile maangti hai aur result ko JSON banati hai. Kuch fail ho toh error status banati hai, jaise 401 (allowed nahi) ya 404 (mila nahi)."
-    ),
-    icons: ["🪪", "🗃️", "🧾"],
-    items: [b("Check token\nWho are you?", "Token check\nAap kaun?"), b("Database\nFind profile", "Database\nProfile dhoondo"), b("Build JSON\n+ status")],
-    analogy: b("A clerk checks your ID, looks in the files and writes the answer.", "Clerk ID dekhta hai, files mein dhoondhta hai aur jawab likhta hai."),
-    remember: b("Success is 200. Problems get codes like 401 or 404.", "Success 200 hai. Problem par 401 ya 404 jaise codes milte hain."),
-    terms: [["Route", b("The URL path the app listens on.", "URL path jis par app sunti hai.")], ["Database", b("Where the app stores data.", "Jaha app data rakhti hai.")]],
-  },
-  {
-    id: "response", phase: "21 · Reply travels", node: 2, layer: "none",
-    packet: "HTTP/1.1 200 OK · Content-Type: application/json · { ... }",
-    title: b("The answer travels back", "Jawab wapas aata hai"),
-    plain: b("The server wraps the answer the same way and sends it back along the same road.", "Server jawab ko usi tarah wrap karke usi raaste se wapas bhejta hai."),
-    detail: b(
-      "The response has a status code (200 OK), headers and often a JSON body. It is encrypted by TLS, split into TCP segments, put in IP packets and frames, and routed back. Your home router uses its NAT table to pass it to your laptop's private IP.",
-      "Response mein status code (200 OK), headers aur aksar JSON body hoti hai. TLS use encrypt karta hai, TCP segments banate hain, IP packets aur frames mein jaata hai aur route hokar wapas aata hai. Home router NAT table se use aapke laptop ke private IP tak pahunchata hai."
-    ),
-    icons: ["🧑‍🍳", "📦", "🏠"],
-    items: [b("Server makes\n200 OK + data", "Server banata\n200 OK + data"), b("Wrapped again\nTLS · TCP · IP", "Phir wrap\nTLS · TCP · IP"), b("Router (NAT)\nSends to laptop", "Router (NAT)\nLaptop tak")],
-    analogy: b("The office mails a reply to your return address.", "Office reply aapke return address par bhejta hai."),
-    remember: b("Response = status + headers + body.", "Response = status + headers + body."),
-    terms: [["Status code", b("Result number: 200 OK, 404 Not Found.")], ["JSON", b("A simple text format for data.", "Data ka simple text format.")]],
-  },
-  {
-    id: "browser-receives", phase: "22 · Browser reads", node: 0, layer: "app",
-    packet: "Frame → IP → TCP → TLS decrypt → response.json() → React redraws",
-    title: b("The browser reads the answer", "Browser jawab padhta hai"),
-    plain: b("The browser unwraps the reply, checks the rules and hands the data to your code.", "Browser reply kholta hai, rules check karta hai aur data code ko deta hai."),
-    detail: b(
-      "Your device unwraps frame, packet, TCP and TLS, in the same reverse order the server used. The browser checks the CORS headers: if the server did not allow your site, your code is blocked from reading the data even though it arrived. Otherwise response.json() gives your code an object, setState runs and React redraws the profile on screen.",
-      "Aapka device frame, packet, TCP aur TLS ko usi ulte order mein kholta hai jo server ne use kiya. Browser CORS headers check karta hai: server ne aapki site allow nahi ki toh data aane ke baad bhi code use padh nahi sakta. Warna response.json() code ko object deta hai, setState chalta hai aur React screen par profile dobara draw karta hai."
-    ),
-    icons: ["🔓", "🛂", "⚛️", "🖼️"],
-    items: [b("Unwrap\nFrame → TLS"), b("CORS check\nAllowed?"), b("response.json()\nData object"), b("React redraws\nProfile shows", "React redraw\nProfile dikhta hai")],
-    analogy: b("You open the parcel, check it is really for you, then use what is inside.", "Parcel kholte ho, check karte ho aapka hi hai, phir andar ka use karte ho."),
-    remember: b("A CORS block happens after the data has already arrived.", "CORS block data aane ke baad hota hai."),
-    terms: [["response.json()", b("Turns JSON text into a JavaScript object.", "JSON text ko JavaScript object banata hai.")], ["State", b("Data React remembers to draw the page.", "Data jo React page draw karne ke liye yaad rakhta hai.")]],
-  },
-  {
-    id: "connection-end", phase: "23 · Finish", node: 1, layer: "none",
-    packet: "Keep-alive → reuse for the next request, or FIN → close",
-    title: b("What happens to the connection?", "Connection ka kya hota hai?"),
-    plain: b("The connection usually stays open for the next request, or closes politely.", "Connection aksar agli request ke liye khula rehta hai, ya tameez se band hota hai."),
-    detail: b(
-      "Browsers keep TCP + TLS connections open (keep-alive), so the next request skips the handshakes. HTTP/2 can send many requests at once over one connection, and HTTP/3 does the same over QUIC (which runs on UDP). When a connection is no longer needed, one side sends FIN to close it.",
-      "Browsers TCP + TLS connection khula rakhte hain (keep-alive), isliye agli request handshakes skip karti hai. HTTP/2 ek connection par kai requests ek saath bhej sakta hai, aur HTTP/3 QUIC (UDP par) se yahi karta hai. Zarurat nahi rehne par ek side FIN bhejkar band karti hai."
-    ),
-    icons: ["♻️", "🚦", "👋"],
-    items: [b("Keep-alive\nReuse it", "Keep-alive\nReuse karo"), b("HTTP/2 · 3\nMany requests", "HTTP/2 · 3\nKai requests"), b("FIN\nClose politely", "FIN\nTameez se band")],
-    analogy: b("Leaving the phone line open between two questions instead of redialling.", "Do sawaalon ke beech phone line chalu rakhna, dobara dial nahi karna."),
-    remember: b("Reusing a connection saves the whole handshake cost.", "Connection reuse karne se poora handshake bachta hai."),
-    terms: [["Keep-alive", b("Keeping a connection open for reuse.", "Reuse ke liye connection khula rakhna.")], ["FIN", b("The TCP message that closes a connection.", "TCP message jo connection band karta hai.")]],
+    icons: ["🏠", "🧭", "🔁", "🗄️"],
+    items: [b("Your device\nLocal frame"), b("Router\nRemove frame"), b("Next hop\nNew frame"), b("Server network\nDeliver")],
+    analogy: b("A parcel keeps its destination address, but each delivery leg gets a new local label.", "Parcel ka final address same rehta hai, lekin har delivery leg par naya local label lagta hai."),
+    remember: b("Routers replace link frames at each hop; the IP packet continues toward the destination.", "Routers har hop par link frame replace karte hain; IP packet destination ki taraf badhta hai."),
+    terms: [["Hop", b("One router-to-router forwarding step.", "Ek router se next router tak forwarding step.")], ["Encapsulation", b("Wrapping data with a layer's header.", "Data ke saath layer ka header add karke wrap karna.")]],
   },
 ];
 
