@@ -41,7 +41,7 @@ export default function Sidebar({
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1.2} sx={{ px: 1, mb: 2.6 }}>
-        <Box
+        {/* <Box
           sx={{
             width: 30,
             height: 30,
@@ -49,10 +49,19 @@ export default function Sidebar({
             flex: "0 0 30px",
             background: "linear-gradient(135deg, #7c8cff, #3454d1)",
           }}
-        />
-        <Box sx={{ minWidth: 0 }}>
-          <Typography sx={{ fontWeight: 800, fontSize: 14.5, lineHeight: 1.2 }}>{t.appName}</Typography>
-          <Typography sx={{ fontSize: 10, color: "text.secondary", whiteSpace: "nowrap" }}>{t.tagline}</Typography>
+        /> */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, minWidth: 0 }}>
+          <Box
+            component="img"
+            src="/resilientflow-icon.svg"
+            alt="ResilientFlow logo"
+            sx={{ width: 34, height: 34, flexShrink: 0, borderRadius: 1.5 }}
+          />
+
+          <Box sx={{ minWidth: 0 }}>
+            <Typography sx={{ fontWeight: 800, fontSize: 14.5, lineHeight: 1.2 }}>{t.appName}</Typography>
+            <Typography sx={{ fontSize: 10, color: "text.secondary", whiteSpace: "nowrap" }}>{t.tagline}</Typography>
+          </Box>
         </Box>
       </Stack>
 
@@ -79,7 +88,7 @@ export default function Sidebar({
 
       <SectionLabel sx={{ mt: 2.2 }}>{t.navMore}</SectionLabel>
       {MORE_TOPICS.map((item) => (
-        <Row key={item.label} emoji={item.icon} label={item.label} disabled badge={t.comingSoon} onClick={() => {}} />
+        <Row key={item.label} emoji={item.icon} label={item.label} disabled badge={t.comingSoon} onClick={() => { }} />
       ))}
     </Box>
   );
