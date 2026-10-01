@@ -85,7 +85,7 @@ import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 
 import type { Lang } from "../i18n";
 import type { ThemeName } from "../theme";
-import ThemePicker from "../Themepicker";
+import ThemePicker from "../ThemePicker";
 
 export default function TopBar({
   mode,

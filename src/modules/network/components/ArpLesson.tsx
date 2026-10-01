@@ -354,7 +354,7 @@ const ARPDiagram: React.FC<{ lang: Lang }> = ({ lang }) => {
 };
 
 const ARPLesson: React.FC<ARPLessonProps> = ({ lang = "en" }) => {
-  const theme = useTheme();
+
   const [stepIndex, setStepIndex] = useState(0);
 
   const labels = ARP_LABELS[lang];
