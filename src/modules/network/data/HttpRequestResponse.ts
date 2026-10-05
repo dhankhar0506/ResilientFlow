@@ -1496,3 +1496,301 @@ export const HTTP_STEPS: HttpStep[] = [
 export const HTTP_Request_Response = {
   heroTitle: "Learn how computers & software actually work",
 };
+
+// import type { Bi } from "./HttpRequestResponse";
+
+// const b = (en: string, hi: string = en): Bi => ({ en, hi });
+
+/* ------------------------------------------------------------------ */
+/*  Extra UI labels used by the redesigned lesson                      */
+/* ------------------------------------------------------------------ */
+export const EASY_UI = {
+  en: {
+    heroTitle: "What happens when your app calls fetch()?",
+    simpleWords: "In simple words",
+    whatHappens: "What happens, step by step",
+    technical: "Technical details (optional)",
+    keyWords: "Key words",
+    noLayer:
+      "No wrapping in this step. A DNS lookup is a small separate question asked before the real request is sent.",
+    journeyHint: "The 📨 shows where the data is right now.",
+  },
+  hi: {
+    heroTitle: "fetch() call karne par asal mein kya hota hai?",
+    simpleWords: "Aasan bhasha mein",
+    whatHappens: "Kya hota hai, step by step",
+    technical: "Technical details (optional)",
+    keyWords: "Zaroori words",
+    noLayer:
+      "Is step mein wrapping nahi hoti. DNS lookup ek chhota alag sawal hai jo asli request bhejne se pehle poocha jaata hai.",
+    journeyHint: "📨 dikhata hai ki data abhi kahan hai.",
+  },
+} as const;
+
+/* ------------------------------------------------------------------ */
+/*  Journey diagram nodes (4 stops)                                    */
+/* ------------------------------------------------------------------ */
+export const JOURNEY_NODES = [
+  { icon: "💻", en: { title: "Your browser", sub: "Your device" }, hi: { title: "Aapka browser", sub: "Aapka device" } },
+  { icon: "📡", en: { title: "Home router", sub: "Your exit door" }, hi: { title: "Home router", sub: "Aapka exit door" } },
+  { icon: "🌍", en: { title: "Internet", sub: "Many routers" }, hi: { title: "Internet", sub: "Kai routers" } },
+  { icon: "🗄️", en: { title: "Server", sub: "The answerer" }, hi: { title: "Server", sub: "Jawab dene wala" } },
+];
+
+export interface EasyStep {
+  pos: 0 | 1 | 2 | 3; // where the data is: index in JOURNEY_NODES
+  easy: Bi; // plain-language explanation
+  steps: Bi[]; // short numbered list: what happens
+}
+
+/* ------------------------------------------------------------------ */
+/*  Easy explanation for every step (keyed by HttpStep.id)             */
+/* ------------------------------------------------------------------ */
+export const HTTP_EASY: Record<string, EasyStep> = {
+  "fetch-call": {
+    pos: 0,
+    easy: b(
+      "Your code says: 'please get me this data from this address'. The code does not send anything by itself. It asks the browser, which already knows how to use the internet.",
+      "Aapka code kehta hai: 'is address se mujhe yeh data la do'. Code khud kuch nahi bhejta. Woh browser se kehta hai, jo internet use karna pehle se jaanta hai."
+    ),
+    steps: [
+      b("You write fetch(\"https://api.example.com/profile\").", "Aap fetch(\"https://api.example.com/profile\") likhte ho."),
+      b("The browser receives the call and starts the job.", "Browser yeh call receive karke kaam shuru karta hai."),
+      b("Nothing has left your device yet.", "Abhi tak kuch bhi aapke device se bahar nahi gaya."),
+    ],
+  },
+  "browser-prepares": {
+    pos: 0,
+    easy: b(
+      "Before sending, the browser fills in a kind of form: where to go, what you want, who you are, and any data to send. It also checks its safety rules.",
+      "Bhejne se pehle browser ek form jaisa bharta hai: kahan jaana hai, aapko kya chahiye, aap kaun ho, aur kaun sa data bhejna hai. Woh apne safety rules bhi check karta hai."
+    ),
+    steps: [
+      b("Reads the URL: the site is api.example.com and the path is /profile.", "URL padhta hai: site api.example.com hai aur path /profile hai."),
+      b("Picks the method. GET means 'give me data'.", "Method chunta hai. GET ka matlab 'mujhe data do'."),
+      b("Adds headers and cookies, if the rules allow it.", "Rules allow karein toh headers aur cookies add karta hai."),
+      b("Checks safety rules such as CORS.", "CORS jaise safety rules check karta hai."),
+    ],
+  },
+  dns: {
+    pos: 2,
+    easy: b(
+      "Computers find each other using numbers (IP addresses), not names. DNS is like a phone book that turns api.example.com into a number such as 203.0.113.10.",
+      "Computers ek-dusre ko naam se nahi, numbers (IP addresses) se dhundhte hain. DNS ek phone book jaisa hai jo api.example.com ko 203.0.113.10 jaise number mein badal deta hai."
+    ),
+    steps: [
+      b("The browser first checks if it already remembers the answer (cache).", "Browser pehle check karta hai ki use jawab pehle se yaad hai ya nahi (cache)."),
+      b("If not, it asks a DNS server.", "Nahi yaad, toh woh DNS server se poochta hai."),
+      b("It gets back the server's IP address.", "Use server ka IP address mil jaata hai."),
+      b("Now it knows where to send the request.", "Ab use pata hai ki request kahan bhejni hai."),
+    ],
+  },
+  serialize: {
+    pos: 0,
+    easy: b(
+      "Wires and Wi-Fi can only carry 0s and 1s. So the browser turns the whole request into bytes, which are just numbers made of 0s and 1s.",
+      "Wires aur Wi-Fi sirf 0 aur 1 carry kar sakte hain. Isliye browser poori request ko bytes mein badal deta hai, jo 0 aur 1 se bane numbers hote hain."
+    ),
+    steps: [
+      b("The text of the request becomes bytes.", "Request ka text bytes ban jaata hai."),
+      b("The bytes go to the operating system's network software.", "Bytes operating system ke network software ko jaate hain."),
+      b("From here on, the data is just a stream of bytes.", "Yahan se aage data bas bytes ki ek stream hai."),
+    ],
+  },
+  "tcp-handshake": {
+    pos: 2,
+    easy: b(
+      "Before sending real data, your device and the server greet each other in three short messages. This makes sure both are ready, and opens a reliable connection called TCP.",
+      "Asli data bhejne se pehle aapka device aur server teen chhote messages mein ek-dusre ko hello bolte hain. Isse pakka hota hai ki dono ready hain, aur TCP naam ka reliable connection khulta hai."
+    ),
+    steps: [
+      b("Your device: 'Can we talk?' (SYN)", "Aapka device: 'Baat kar sakte hain?' (SYN)"),
+      b("Server: 'Yes. Can you hear me?' (SYN-ACK)", "Server: 'Haan. Meri awaaz aa rahi hai?' (SYN-ACK)"),
+      b("Your device: 'Yes, let's start.' (ACK)", "Aapka device: 'Haan, shuru karo.' (ACK)"),
+      b("Port 443 is the door the server uses for HTTPS.", "Port 443 woh darwaza hai jo server HTTPS ke liye use karta hai."),
+    ],
+  },
+  "tls-handshake": {
+    pos: 2,
+    easy: b(
+      "TLS makes the connection private. The server proves who it is with a certificate, and both sides agree on secret keys, so nobody in the middle can read your data.",
+      "TLS connection ko private banata hai. Server certificate se apni pehchaan prove karta hai, aur dono sides secret keys par agree hote hain, taaki beech mein koi data na padh sake."
+    ),
+    steps: [
+      b("The server shows its certificate, a digital ID card.", "Server apna certificate dikhata hai, jo ek digital ID card hai."),
+      b("The browser checks that the ID is valid and matches api.example.com.", "Browser check karta hai ki ID valid hai aur api.example.com se match karti hai."),
+      b("Both sides create secret keys.", "Dono sides secret keys banate hain."),
+      b("From now on, everything is encrypted.", "Ab se sab kuch encrypted hota hai."),
+    ],
+  },
+  "tcp-segments": {
+    pos: 0,
+    easy: b(
+      "Big data is cut into small numbered pieces called segments. The numbers help the receiver put the pieces back in order, and lost pieces can be sent again.",
+      "Bade data ko chhote numbered pieces mein kaata jaata hai, jinhe segments kehte hain. Numbers se receiver pieces ko sahi order mein jod sakta hai, aur kho gaye pieces dobara bheje ja sakte hain."
+    ),
+    steps: [
+      b("The bytes are cut into pieces.", "Bytes ko pieces mein kaata jaata hai."),
+      b("Each piece gets a header with ports and a sequence number.", "Har piece par ports aur sequence number wala header lagta hai."),
+      b("The source port is a temporary port your device picked (here 52814).", "Source port ek temporary port hai jo aapke device ne chuna (yahan 52814)."),
+      b("The destination port is 443, the server's HTTPS door.", "Destination port 443 hai, server ka HTTPS darwaza."),
+    ],
+  },
+  "ip-packets": {
+    pos: 0,
+    easy: b(
+      "Each piece is put in a package with the sender's and the receiver's IP addresses. Routers only read this address to decide where the package goes next.",
+      "Har piece ek package mein rakha jaata hai jis par sender aur receiver ke IP addresses hote hain. Routers sirf yeh address padhkar decide karte hain ki package aage kahan jaayega."
+    ),
+    steps: [
+      b("IP adds the source IP: your device, like 192.168.1.5.", "IP source IP add karta hai: aapka device, jaise 192.168.1.5."),
+      b("IP adds the destination IP: 203.0.113.10.", "IP destination IP add karta hai: 203.0.113.10."),
+      b("The result is called an IP packet.", "Iska result IP packet kehlata hai."),
+      b("IP addresses guide the trip across networks. Ports pick the program at the end.", "IP addresses networks ke across safar guide karte hain. Ports end mein program chunte hain."),
+    ],
+  },
+  "link-frames": {
+    pos: 1,
+    easy: b(
+      "Your device can only hand the packet to the next device on its own local link, usually your router. So it adds a local address (MAC address) for that next stop.",
+      "Aapka device packet sirf apne local link ke next device ko de sakta hai, aam taur par aapka router. Isliye woh us next stop ke liye ek local address (MAC address) lagata hai."
+    ),
+    steps: [
+      b("The packet is put inside a frame.", "Packet ko frame ke andar rakha jaata hai."),
+      b("The frame carries your device's MAC address as the source.", "Frame mein source ke roop mein aapke device ka MAC address hota hai."),
+      b("The destination MAC is your router's (the default gateway), not the server's.", "Destination MAC aapke router (default gateway) ka hota hai, server ka nahi."),
+      b("The frame travels over Wi-Fi or cable.", "Frame Wi-Fi ya cable par travel karta hai."),
+    ],
+  },
+  "routing-hops": {
+    pos: 2,
+    easy: b(
+      "The packet hops from router to router. Each router reads the destination IP, picks the next router, and puts the packet in a fresh local frame.",
+      "Packet router se router tak hop karta hai. Har router destination IP padhta hai, next router chunta hai, aur packet ko ek naye local frame mein rakhta hai."
+    ),
+    steps: [
+      b("A router receives the frame and removes it.", "Router frame receive karke use hata deta hai."),
+      b("It reads the destination IP.", "Woh destination IP padhta hai."),
+      b("It picks the next hop from its routing table.", "Woh apni routing table se next hop chunta hai."),
+      b("It wraps the packet in a new frame and sends it on.", "Woh packet ko naye frame mein wrap karke aage bhejta hai."),
+      b("At your home router, NAT also swaps your private IP for the router's public IP.", "Aapke home router par NAT aapka private IP router ke public IP se badal deta hai."),
+    ],
+  },
+  "server-receives": {
+    pos: 3,
+    easy: b(
+      "At the server, the same layers are removed in reverse. The frame comes off, then the IP header, then the TCP header, and the pieces are put back in order.",
+      "Server par wahi layers ulte order mein hatayi jaati hain. Pehle frame, phir IP header, phir TCP header hatta hai, aur pieces sahi order mein jud jaate hain."
+    ),
+    steps: [
+      b("The network card checks that the frame is for it and removes it.", "Network card check karta hai ki frame uske liye hai aur use hata deta hai."),
+      b("The OS checks the IP address and removes the IP header.", "OS IP address check karke IP header hata deta hai."),
+      b("TCP reads port 443 and hands the data to the web server program.", "TCP port 443 padhta hai aur data web server program ko deta hai."),
+      b("TCP puts the pieces in order and sends ACKs back.", "TCP pieces ko order mein lagata hai aur ACKs wapas bhejta hai."),
+    ],
+  },
+  "server-decrypts": {
+    pos: 3,
+    easy: b(
+      "The server uses the secret key to unlock the data. Now it can read your request: what you want (GET /profile) and who you are.",
+      "Server secret key se data unlock karta hai. Ab woh aapki request padh sakta hai: aapko kya chahiye (GET /profile) aur aap kaun ho."
+    ),
+    steps: [
+      b("TLS encryption is removed.", "TLS encryption hata di jaati hai."),
+      b("The server reads the first line: GET /profile.", "Server pehli line padhta hai: GET /profile."),
+      b("It reads headers such as Host and Authorization.", "Woh Host aur Authorization jaise headers padhta hai."),
+      b("Now it knows exactly what you asked for.", "Ab use bilkul pata hai ki aapne kya maanga."),
+    ],
+  },
+  "server-processes": {
+    pos: 3,
+    easy: b(
+      "Now comes the real work. The server's program finds the right code for /profile, checks that you are logged in, reads your data from a database, and decides whether it worked.",
+      "Ab asli kaam shuru hota hai. Server ka program /profile ke liye sahi code dhundhta hai, check karta hai ki aap logged in ho, database se aapka data padhta hai, aur decide karta hai ki kaam hua ya nahi."
+    ),
+    steps: [
+      b("Routing: pick the code that handles GET /profile.", "Routing: GET /profile handle karne wala code chuno."),
+      b("Check the login and permissions.", "Login aur permissions check karo."),
+      b("Read the data from the database.", "Database se data padho."),
+      b("Pick a status code such as 200 (OK) and prepare the JSON.", "200 (OK) jaisa status code chuno aur JSON taiyaar karo."),
+    ],
+  },
+  "server-builds-response": {
+    pos: 3,
+    easy: b(
+      "The server writes its reply in the HTTP format: first a status line, then headers that describe the data, then the data itself.",
+      "Server apna jawab HTTP format mein likhta hai: pehle status line, phir data ko describe karne wale headers, phir asli data."
+    ),
+    steps: [
+      b("Status line: HTTP/1.1 200 OK.", "Status line: HTTP/1.1 200 OK."),
+      b("Headers: type, size, caching, cookies.", "Headers: type, size, caching, cookies."),
+      b("Body: the JSON data.", "Body: JSON data."),
+      b("Like the request, it is turned into bytes before sending.", "Request ki tarah, bhejne se pehle yeh bhi bytes mein badalta hai."),
+    ],
+  },
+  "server-wraps": {
+    pos: 3,
+    easy: b(
+      "The reply is wrapped just like the request, but with source and destination swapped. It uses the same connection that was already opened.",
+      "Reply ko request ki tarah hi wrap kiya jaata hai, bas source aur destination badal jaate hain. Woh usi connection par jaata hai jo pehle se khula hai."
+    ),
+    steps: [
+      b("TLS encrypts the reply.", "TLS reply ko encrypt karta hai."),
+      b("TCP: source port 443, destination port 52814.", "TCP: source port 443, destination port 52814."),
+      b("IP: source is the server, destination is your public IP.", "IP: source server hai, destination aapka public IP hai."),
+      b("A frame is added for the server's next router.", "Server ke next router ke liye frame add hota hai."),
+    ],
+  },
+  "response-routing": {
+    pos: 1,
+    easy: b(
+      "The reply hops back through routers. At your home, the router checks its NAT table to see which device asked, and passes the reply to that device.",
+      "Reply routers se hop karta hua wapas aata hai. Aapke ghar mein router NAT table dekhta hai ki kis device ne maanga tha, aur reply usi device ko de deta hai."
+    ),
+    steps: [
+      b("Routers forward the reply hop by hop. The path may differ from the way in.", "Routers reply ko hop by hop forward karte hain. Raasta aane wale raaste se alag ho sakta hai."),
+      b("Each router lowers the TTL counter by one.", "Har router TTL counter ek kam karta hai."),
+      b("Your home router finds your device in its NAT table.", "Aapka home router NAT table mein aapka device dhundhta hai."),
+      b("It swaps the public IP for your private IP and delivers the reply.", "Woh public IP ko aapke private IP se badalta hai aur reply deliver karta hai."),
+    ],
+  },
+  "client-unwraps": {
+    pos: 0,
+    easy: b(
+      "Your device unwraps the reply: the frame comes off, then the IP header, then the pieces are put back in order. What is left is still encrypted.",
+      "Aapka device reply ko kholta hai: frame hatta hai, phir IP header, phir pieces sahi order mein jud jaate hain. Jo bachta hai woh abhi bhi encrypted hota hai."
+    ),
+    steps: [
+      b("The network card removes the frame.", "Network card frame hata deta hai."),
+      b("The OS removes the IP header.", "OS IP header hata deta hai."),
+      b("TCP matches port 52814 to your browser's connection.", "TCP port 52814 ko aapke browser ke connection se match karta hai."),
+      b("TCP puts the pieces in order and asks again for any missing ones.", "TCP pieces ko order mein lagata hai aur jo missing ho woh dobara maangta hai."),
+    ],
+  },
+  "client-decrypts": {
+    pos: 0,
+    easy: b(
+      "The browser unlocks the encryption and reads the status and headers. It also checks safety rules such as CORS before it gives the answer to your code.",
+      "Browser encryption unlock karke status aur headers padhta hai. Woh aapke code ko jawab dene se pehle CORS jaise safety rules bhi check karta hai."
+    ),
+    steps: [
+      b("Decrypt the TLS data.", "TLS data decrypt karo."),
+      b("Read the status (200) and the headers.", "Status (200) aur headers padho."),
+      b("Check CORS, caching and cookie rules.", "CORS, caching aur cookie rules check karo."),
+      b("If everything is allowed, give the response to fetch().", "Sab allowed ho toh response fetch() ko do."),
+    ],
+  },
+  "page-updates": {
+    pos: 0,
+    easy: b(
+      "Your code finally gets the data. It reads the JSON, saves it in state, and the screen updates. The connection is often kept open for the next request.",
+      "Aapke code ko aakhir mein data mil jaata hai. Woh JSON padhta hai, state mein save karta hai, aur screen update ho jaati hai. Agli request ke liye connection aksar khula rehta hai."
+    ),
+    steps: [
+      b("The fetch() Promise resolves.", "fetch() ka Promise resolve hota hai."),
+      b("Check res.ok. A 404 or 500 still resolves.", "res.ok check karo. 404 ya 500 par bhi Promise resolve hota hai."),
+      b("res.json() turns the JSON text into an object.", "res.json() JSON text ko object mein badalta hai."),
+      b("Save it in state and the page re-renders.", "Use state mein rakho aur page dobara render hota hai."),
+    ],
+  },
+};

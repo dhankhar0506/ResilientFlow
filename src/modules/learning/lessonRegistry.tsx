@@ -20,7 +20,9 @@ export const LESSON_COMPONENTS: Record<string, Lesson> = {
     "arp": lazy(() => import("../network/components/ARPLesson")),
     "osi": lazy(() => import("../network/components/OSI_TCP_IP")),
     "routing": lazy(() => import("../network/components/RoutingLesson")),
-    "DNSLookup": lazy(() => import("../network/components/DNSLookup"))
+    "DNSLookup": lazy(() => import("../network/components/DNSLookup")),
+    "nat": lazy(() => import("../network/components/NAT")),
+    
 
     // Naya lesson yahan add karo 👇
     // osi: lazy(() => import("../network/components/OsiModel")),

@@ -156,6 +156,12 @@ export const NETWORK_LESSONS = [
     available: true,
     label: "Routing in Networks",
   },
+  {
+    id: "nat",
+    icon: "🔀",
+    available: true,
+    label: "Network Address Translation (NAT)",
+  },
   { id: "DNSLookup", icon: "🔎", available: true, label: "DNS lookup" },
   { id: "packet", icon: "📦", available: false, label: "Packet journey" },
   { id: "arp", icon: "🏷️", available: false, label: "ARP & MAC addresses" },

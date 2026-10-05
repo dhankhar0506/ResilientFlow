@@ -1,12 +1,12 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactElement } from "react";
 import { alpha, useTheme, type Theme } from "@mui/material/styles";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Chip,
-  Divider,
-  LinearProgress,
   Paper,
   Stack,
   Typography,
@@ -14,23 +14,26 @@ import {
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
-import LanRoundedIcon from "@mui/icons-material/LanRounded";
-import TravelExploreRoundedIcon from "@mui/icons-material/TravelExploreRounded";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import LayersRoundedIcon from "@mui/icons-material/LayersRounded";
-import QuestionMarkRoundedIcon from "@mui/icons-material/QuestionMarkRounded";
-import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import { type Lang } from "../../../i18n";
 import {
   HTTP_STEPS,
   HTTP_UI,
   LAYER_RANK,
-  NODES,
   type ConnectionReveal,
   type Layer,
 } from "../data/HttpRequestResponse";
+import {
+  EASY_UI,
+  HTTP_EASY,
+  JOURNEY_NODES,
+} from "../data/HttpRequestResponse";
 
-const LAYER_KEYS = [
+const mono = "ui-monospace, SFMono-Regular, Menlo, monospace";
+
+/* rank 5 = outermost wrapper, rank 1 = the HTTP message itself */
+const LAYER_BY_RANK = [
+  null,
   "layerData",
   "layerTls",
   "layerSegment",
@@ -38,780 +41,9 @@ const LAYER_KEYS = [
   "layerFrame",
 ] as const;
 
-type LayerKey = (typeof LAYER_KEYS)[number];
+type LayerKey = Exclude<(typeof LAYER_BY_RANK)[number], null>;
 
-export default function HttpRequestResponse({ lang }: { lang: Lang }) {
-  const [stepIndex, setStepIndex] = useState(0);
-  const lesson = HTTP_UI[lang];
-  const step = HTTP_STEPS[stepIndex];
-  const last = HTTP_STEPS.length - 1;
-  const progress = ((stepIndex + 1) / HTTP_STEPS.length) * 100;
-
-  const go = (index: number) => {
-    setStepIndex(Math.min(last, Math.max(0, index)));
-  };
-
-  const known = useMemo(
-    () =>
-      HTTP_STEPS.slice(0, stepIndex + 1).reduce<ConnectionReveal>(
-        (acc, item) => ({ ...acc, ...item.reveal }),
-        {}
-      ),
-    [stepIndex]
-  );
-
-  const destination = known.destIp
-    ? `${known.destIp}${known.destPort ? `:${known.destPort}` : ""}`
-    : known.destPort
-      ? `:${known.destPort}`
-      : undefined;
-
-  const source = known.sourceIp
-    ? `${known.sourceIp}${known.sourcePort ? `:${known.sourcePort}` : ""}`
-    : known.sourcePort
-      ? `:${known.sourcePort}`
-      : undefined;
-
-  const facts: [string, string | undefined][] = [
-    [lesson.domain, known.domain],
-    [lesson.protocol, known.protocol],
-    [lesson.source, source],
-    [lesson.destination, destination],
-    [lesson.status, known.status],
-  ];
-
-  const directionLabel =
-    step.direction === "request" ? lesson.requestLabel : lesson.responseLabel;
-
-  return (
-    <Stack spacing={1.2} sx={{ width: "100%", pb: 0.5 }}>
-      {/* Header */}
-      <Paper
-        variant="outlined"
-        sx={{
-          p: { xs: 1.2, md: 1.5 },
-          borderRadius: 1,
-          color: "text.primary",
-          overflow: "hidden",
-        }}
-      >
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          justifyContent="space-between"
-          alignItems={{ xs: "stretch", sm: "center" }}
-          gap={1.2}
-        >
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Box
-              sx={{
-                width: 34,
-                height: 34,
-                display: "grid",
-                placeItems: "center",
-                borderRadius: 1,
-                color: "primary.main",
-                bgcolor: (t) => alpha(t.palette.primary.main, 0.08),
-              }}
-            >
-              <LanRoundedIcon sx={{ fontSize: 21 }} />
-            </Box>
-            <Box sx={{ minWidth: 0 }}>
-              <Typography
-                sx={{
-                  fontSize: { xs: 16, md: 18 },
-                  fontWeight: 800,
-                  lineHeight: 1.25,
-                }}
-              >
-                {lesson.lessonTitle}
-              </Typography>
-              <Typography
-                sx={{ color: "text.secondary", mt: 0.2, fontSize: 11.5 }}
-              >
-                {lesson.lessonSubtitle}
-              </Typography>
-            </Box>
-          </Stack>
-
-          <Box sx={{ minWidth: { sm: 175 }, maxWidth: { sm: 250 } }}>
-            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.45 }}>
-              <Typography
-                sx={{ fontSize: 11, color: "text.secondary", fontWeight: 700 }}
-              >
-                {lesson.stepWord} {stepIndex + 1} / {HTTP_STEPS.length}
-              </Typography>
-              <Typography
-                sx={{ fontSize: 11, fontWeight: 800, color: "text.secondary" }}
-              >
-                {Math.round(progress)}%
-              </Typography>
-            </Stack>
-            <LinearProgress
-              variant="determinate"
-              value={progress}
-              sx={{ height: 5, borderRadius: 20 }}
-            />
-          </Box>
-        </Stack>
-      </Paper>
-
-      {/* Journey + known connection information */}
-      <Stack
-        direction={{ xs: "column", lg: "row" }}
-        gap={1.5}
-        alignItems="stretch"
-      >
-        <Paper
-          variant="outlined"
-          sx={{ flex: "1 1 360px", p: 1, borderRadius: 1 }}
-        >
-          <Stack direction="row" alignItems="center" gap={0.8} sx={{ mb: 0.7 }}>
-            <TravelExploreRoundedIcon
-              sx={{ color: "primary.main", fontSize: 17 }}
-            />
-            <Typography sx={{ fontWeight: 800, fontSize: 12 }}>
-              {lesson.requestJourney}
-            </Typography>
-          </Stack>
-
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            alignItems="stretch"
-            gap={0.8}
-          >
-            {NODES.map((node, i) => (
-              <Box
-                key={i}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.8,
-                  flex: 1,
-                  minWidth: 0,
-                }}
-              >
-                <Box
-                  sx={{
-                    px: 0.9,
-                    py: 0.55,
-                    borderRadius: 1,
-                    border: "1px solid",
-                    borderColor:
-                      step.node === i ? "primary.main" : "divider",
-                    bgcolor:
-                      step.node === i
-                        ? (t) => alpha(t.palette.primary.main, 0.07)
-                        : "background.default",
-                    minWidth: 0,
-                    width: "100%",
-                  }}
-                >
-                  <Typography
-                    sx={{ fontSize: 11, fontWeight: 800, whiteSpace: "nowrap" }}
-                  >
-                    {node.icon} {node[lang].title}
-                  </Typography>
-                  <Typography
-                    sx={{
-                      fontSize: 9.5,
-                      color: "text.secondary",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {node[lang].sub}
-                  </Typography>
-                </Box>
-                {i < NODES.length - 1 && (
-                  <ArrowForwardRoundedIcon
-                    sx={{
-                      fontSize: 17,
-                      color: "text.disabled",
-                      flexShrink: 0,
-                      display: { xs: "none", sm: "block" },
-                    }}
-                  />
-                )}
-              </Box>
-            ))}
-          </Stack>
-        </Paper>
-
-        <Paper
-          variant="outlined"
-          sx={{ flex: "1 1 320px", p: 1, borderRadius: 1 }}
-        >
-          <Stack direction="row" alignItems="center" gap={0.8} sx={{ mb: 0.7 }}>
-            <InfoOutlinedIcon sx={{ color: "primary.main", fontSize: 19 }} />
-            <Typography sx={{ fontWeight: 800, fontSize: 12 }}>
-              {lesson.known}
-            </Typography>
-          </Stack>
-          <Stack direction="row" gap={0.8} flexWrap="wrap">
-            {facts.map(([label, value]) =>
-              value ? (
-                <Chip
-                  key={label}
-                  size="small"
-                  label={`${label}: ${value}`}
-                  sx={{
-                    borderRadius: 1,
-                    fontWeight: 700,
-                    bgcolor: "action.hover",
-                    maxWidth: "100%",
-                    fontFamily:
-                      label === lesson.domain || label === lesson.destination
-                        ? "ui-monospace, SFMono-Regular, Menlo, monospace"
-                        : "inherit",
-                  }}
-                />
-              ) : null
-            )}
-          </Stack>
-        </Paper>
-      </Stack>
-
-      {/* Main lesson canvas */}
-      <Paper
-        elevation={0}
-        sx={{
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 1,
-          overflow: "hidden",
-          bgcolor: "background.paper",
-        }}
-      >
-        <Box sx={{ p: { xs: 1.2, md: 1.6 } }}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems={{ xs: "stretch", sm: "flex-start" }}
-            gap={1.5}
-            sx={{ mb: 0.8 }}
-          >
-            <Box sx={{ minWidth: 0 }}>
-              <Stack direction="row" gap={0.7} flexWrap="wrap" sx={{ mb: 1.2 }}>
-                <Chip
-                  label={`${lesson.stepWord} ${stepIndex + 1}`}
-                  size="small"
-                  sx={{
-                    bgcolor: (t) => alpha(t.palette.primary.main, 0.08),
-                    color: "primary.main",
-                    fontWeight: 900,
-                    letterSpacing: 0.4,
-                  }}
-                />
-                <Chip
-                  label={
-                    step.direction === "request"
-                      ? lesson.legendRequest
-                      : lesson.legendResponse
-                  }
-                  size="small"
-                  variant="outlined"
-                  sx={{ fontWeight: 700 }}
-                />
-              </Stack>
-
-              <Typography
-                component="h2"
-                sx={{
-                  fontSize: { xs: 18, md: 22 },
-                  fontWeight: 800,
-                  lineHeight: 1.25,
-                  letterSpacing: -0.25,
-                }}
-              >
-                {step.title[lang]}
-              </Typography>
-            </Box>
-
-            <Chip
-              label={step.phase[lang]}
-              size="small"
-              variant="outlined"
-              sx={{
-                alignSelf: { xs: "flex-start", sm: "auto" },
-                flexShrink: 0,
-                maxWidth: { xs: "100%", sm: "42%" },
-                fontWeight: 700,
-                borderRadius: 1,
-                "& .MuiChip-label": {
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                },
-              }}
-            />
-          </Stack>
-
-          <Typography
-            sx={{
-              fontSize: { xs: 13, md: 14 },
-              lineHeight: 1.6,
-              color: "text.secondary",
-              maxWidth: 1050,
-              mb: 1.2,
-            }}
-          >
-            {step.plain[lang]}
-          </Typography>
-
-          {/* Why */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 0.8,
-              p: 1,
-              mb: 1.4,
-              borderRadius: 1,
-              bgcolor: (t) => alpha(t.palette.info.main, 0.07),
-              border: "1px solid",
-              borderColor: (t) => alpha(t.palette.info.main, 0.2),
-            }}
-          >
-            <QuestionMarkRoundedIcon
-              sx={{ color: "info.main", fontSize: 17, mt: 0.1 }}
-            />
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: 10,
-                  color: "info.main",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.7,
-                  mb: 0.35,
-                }}
-              >
-                {lesson.why}
-              </Typography>
-              <Typography sx={{ fontSize: 12, lineHeight: 1.5, fontWeight: 600 }}>
-                {step.why[lang]}
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* Process diagram */}
-          <Box sx={{ mb: 1.4 }}>
-            <Stack direction="row" alignItems="center" gap={0.8} sx={{ mb: 0.7 }}>
-              <Box
-                sx={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 1,
-                  display: "grid",
-                  placeItems: "center",
-                  bgcolor: (t) => alpha(t.palette.primary.main, 0.08),
-                  color: "primary.main",
-                }}
-              >
-                <LayersRoundedIcon sx={{ fontSize: 16 }} />
-              </Box>
-              <Typography sx={{ fontWeight: 800, fontSize: 12 }}>
-                {lesson.diagramLabel}
-              </Typography>
-            </Stack>
-            <FlowDiagram
-              items={step.items.map((item) => item[lang])}
-              icons={step.icons}
-            />
-          </Box>
-
-          {/* Layer progression */}
-          <Box
-            sx={{
-              p: { xs: 0.9, md: 1.1 },
-              borderRadius: 1,
-              bgcolor: "action.hover",
-              mb: 1.3,
-            }}
-          >
-            <LayersProgress
-              layer={step.layer}
-              mode={step.layerMode}
-              lang={lang}
-            />
-          </Box>
-
-          {/* Remember */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 0.8,
-              p: 1,
-              borderRadius: 1,
-              bgcolor: (t) => alpha(t.palette.primary.main, 0.06),
-              border: "1px solid",
-              borderColor: (t) => alpha(t.palette.primary.main, 0.18),
-            }}
-          >
-            <LightbulbOutlinedIcon
-              sx={{ color: "primary.main", fontSize: 17, mt: 0.1 }}
-            />
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: 10,
-                  color: "primary.main",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.7,
-                  mb: 0.35,
-                }}
-              >
-                {lesson.keyTakeaway}
-              </Typography>
-              <Typography sx={{ fontSize: 12.5, lineHeight: 1.5, fontWeight: 700 }}>
-                {step.remember[lang]}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-
-        <Divider />
-
-        {/* Explanation + analogy + terms + packet */}
-        <Box
-          sx={{
-            p: { xs: 1.2, md: 1.6 },
-            bgcolor: "action.hover",
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "minmax(0, 1.25fr) minmax(230px, .85fr)",
-            },
-            gap: 1.5,
-          }}
-        >
-          <Stack gap={1.3}>
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: 11,
-                  fontWeight: 900,
-                  color: "text.secondary",
-                  letterSpacing: 0.7,
-                  textTransform: "uppercase",
-                  mb: 1,
-                }}
-              >
-                🔎 {lesson.tabDetails}
-              </Typography>
-              <Typography sx={{ fontSize: 12.5, lineHeight: 1.65 }}>
-                {step.detail[lang]}
-              </Typography>
-            </Box>
-
-            {/* Real-life analogy */}
-            <Box
-              sx={{
-                p: 1,
-                borderRadius: 1,
-                bgcolor: "background.paper",
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: 10,
-                  color: "secondary.main",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.7,
-                  mb: 0.45,
-                }}
-              >
-                💭 {lesson.tabAnalogy}
-              </Typography>
-              <Typography sx={{ fontSize: 11.5, lineHeight: 1.55 }}>
-                {step.analogy[lang]}
-              </Typography>
-            </Box>
-
-            {/* Fields */}
-            {step.fields && (
-              <Box>
-                <Typography
-                  sx={{
-                    fontSize: 10,
-                    color: "text.secondary",
-                    fontWeight: 900,
-                    textTransform: "uppercase",
-                    letterSpacing: 0.7,
-                    mb: 0.7,
-                  }}
-                >
-                  🔬 {lesson.dataLabel}
-                </Typography>
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "minmax(100px, auto) 1fr",
-                    gap: 0.8,
-                    alignItems: "start",
-                  }}
-                >
-                  {step.fields.map(([key, value]) => (
-                    <Box key={key} sx={{ display: "contents" }}>
-                      <Typography sx={{ fontSize: 11.5, fontWeight: 800 }}>
-                        {key}
-                      </Typography>
-                      <Typography
-                        sx={{
-                          fontSize: 10.5,
-                          color: "text.secondary",
-                          overflowWrap: "anywhere",
-                        }}
-                      >
-                        {value}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            )}
-
-            {/* Key words */}
-            <Box>
-              <Typography
-                sx={{
-                  fontSize: 10,
-                  color: "text.secondary",
-                  fontWeight: 900,
-                  textTransform: "uppercase",
-                  letterSpacing: 0.7,
-                  mb: 0.7,
-                }}
-              >
-                🧠 {lesson.tabWords}
-              </Typography>
-              <Stack direction="row" gap={0.7} flexWrap="wrap">
-                {step.terms.map(([term, explanation]) => (
-                  <Chip
-                    key={term}
-                    size="small"
-                    label={term}
-                    title={explanation[lang]}
-                    variant="outlined"
-                    sx={{ fontWeight: 700 }}
-                  />
-                ))}
-              </Stack>
-            </Box>
-          </Stack>
-
-          {/* Packet / data inspector */}
-          <Paper
-            variant="outlined"
-            elevation={0}
-            sx={{
-              p: 1.2,
-              borderRadius: 1,
-              bgcolor: "background.paper",
-              color: "text.primary",
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-              gap: 0.8,
-            }}
-          >
-            <Box>
-              <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                gap={0.8}
-                sx={{ mb: 1 }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: 10,
-                    color: "primary.main",
-                    fontWeight: 900,
-                    letterSpacing: 0.8,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {lesson.dataLabel}
-                </Typography>
-                <Chip
-                  size="small"
-                  label={directionLabel}
-                  variant="outlined"
-                  sx={{ fontSize: 9.5, fontWeight: 700 }}
-                />
-              </Stack>
-
-              <Box
-                component="pre"
-                sx={{
-                  m: 0,
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "anywhere",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                  fontSize: 11.5,
-                  lineHeight: 1.6,
-                  color: "text.primary",
-                }}
-              >
-                {step.packet}
-              </Box>
-            </Box>
-
-            <Divider />
-
-            <Typography sx={{ fontSize: 10, color: "text.secondary", lineHeight: 1.5 }}>
-              {lesson.snapshotNote}
-            </Typography>
-          </Paper>
-        </Box>
-      </Paper>
-
-      {/* Navigation */}
-      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackRoundedIcon />}
-          disabled={stepIndex === 0}
-          onClick={() => go(stepIndex - 1)}
-          sx={{ px: 1.5 }}
-        >
-          {lesson.previous}
-        </Button>
-
-        <Button
-          variant="text"
-          color="inherit"
-          startIcon={<ReplayRoundedIcon />}
-          onClick={() => go(0)}
-        >
-          {lesson.restart}
-        </Button>
-
-        <Button
-          variant="contained"
-          endIcon={<ArrowForwardRoundedIcon />}
-          disabled={stepIndex === last}
-          onClick={() => go(stepIndex + 1)}
-          sx={{ px: 1.8, boxShadow: "none" }}
-        >
-          {lesson.next}
-        </Button>
-      </Stack>
-    </Stack>
-  );
-}
-
-function FlowDiagram({
-  items,
-  icons,
-}: {
-  items: string[];
-  icons: string[];
-}) {
-  const theme = useTheme();
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "stretch",
-        flexDirection: { xs: "column", sm: "row" },
-        gap: 1,
-      }}
-    >
-      {items.map((text, index) => {
-        const [heading, ...sub] = text.split("\n");
-
-        return (
-          <Box
-            key={`${heading}-${index}`}
-            sx={{
-              display: "flex",
-              flex: "1 1 0",
-              minWidth: 0,
-              flexDirection: { xs: "column", sm: "row" },
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <Paper
-              variant="outlined"
-              sx={{
-                flex: 1,
-                width: "100%",
-                minWidth: 0,
-                minHeight: 76,
-                p: 1,
-                borderRadius: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                textAlign: "center",
-                bgcolor: "background.paper",
-                transition: "transform .18s ease, box-shadow .18s ease",
-                "&:hover": {
-                  transform: "translateY(-3px)",
-                  boxShadow: 3,
-                },
-              }}
-            >
-              <Typography aria-hidden sx={{ fontSize: 24, lineHeight: 1.15, mb: 0.4 }}>
-                {icons[index]}
-              </Typography>
-              <Typography
-                sx={{ fontSize: 12, fontWeight: 800, lineHeight: 1.35, overflowWrap: "anywhere" }}
-              >
-                {heading}
-              </Typography>
-              {sub.length > 0 && (
-                <Typography
-                  sx={{
-                    fontSize: 10.5,
-                    color: "text.secondary",
-                    lineHeight: 1.5,
-                    whiteSpace: "pre-line",
-                    mt: 0.35,
-                  }}
-                >
-                  {sub.join("\n")}
-                </Typography>
-              )}
-            </Paper>
-
-            {index < items.length - 1 && (
-              <ArrowForwardRoundedIcon
-                sx={{
-                  color: theme.palette.primary.main,
-                  fontSize: 22,
-                  flexShrink: 0,
-                  display: { xs: "none", sm: "block" },
-                }}
-              />
-            )}
-            {index < items.length - 1 && (
-              <ArrowForwardRoundedIcon
-                sx={{
-                  color: theme.palette.primary.main,
-                  fontSize: 20,
-                  transform: "rotate(90deg)",
-                  display: { xs: "block", sm: "none" },
-                }}
-              />
-            )}
-          </Box>
-        );
-      })}
-    </Box>
-  );
-}
-
-const getLayerColor = (theme: Theme, key: LayerKey): string => {
+function layerColor(theme: Theme, key: LayerKey): string {
   switch (key) {
     case "layerData":
       return theme.palette.primary.main;
@@ -823,12 +55,142 @@ const getLayerColor = (theme: Theme, key: LayerKey): string => {
       return theme.palette.warning.main;
     case "layerFrame":
       return theme.palette.success.main;
-    default:
-      return theme.palette.primary.main;
   }
-};
+}
 
-function LayersProgress({
+/* ------------------------------------------------------------------ */
+/*  Journey diagram: browser → home router → internet → server         */
+/* ------------------------------------------------------------------ */
+
+function JourneyDiagram({
+  pos,
+  direction,
+  lang,
+}: {
+  pos: number;
+  direction: "request" | "response";
+  lang: Lang;
+}) {
+  const theme = useTheme();
+  const ui = HTTP_UI[lang];
+  const easyUi = EASY_UI[lang];
+  const c = {
+    primary: theme.palette.primary.main,
+    success: theme.palette.success.main,
+    line: theme.palette.divider,
+    text: theme.palette.text.primary,
+    muted: theme.palette.text.secondary,
+    paper: theme.palette.background.paper,
+    tint: theme.palette.action.selected,
+  };
+
+  const xs = [5, 205, 405, 605];
+  const W = 150;
+  const isReq = direction === "request";
+  const tokenColor = isReq ? c.primary : c.success;
+
+  return (
+    <Box
+      sx={{
+        overflowX: "auto",
+        "@media (prefers-reduced-motion: reduce)": {
+          "& .http-token": { transition: "none !important" },
+        },
+      }}
+    >
+      <svg
+        viewBox="0 0 760 200"
+        role="img"
+        aria-label={JOURNEY_NODES.map((n) => n[lang].title).join(" → ")}
+        style={{ width: "100%", minWidth: 600, height: "auto", display: "block", fontFamily: "inherit" }}
+      >
+        <defs>
+          <marker id="http-arrow-req" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 L10 5 L0 10 z" fill={isReq ? c.primary : c.line} />
+          </marker>
+          <marker id="http-arrow-res" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0 0 L10 5 L0 10 z" fill={!isReq ? c.success : c.line} />
+          </marker>
+        </defs>
+
+        {/* Arrows between nodes: top = request, bottom = response */}
+        {xs.slice(0, -1).map((x, i) => (
+          <g key={i}>
+            <line
+              x1={x + W + 4} y1={96} x2={xs[i + 1] - 4} y2={96}
+              stroke={isReq ? c.primary : c.line} strokeWidth={isReq ? 2.5 : 1.5}
+              markerEnd="url(#http-arrow-req)"
+            />
+            <line
+              x1={xs[i + 1] - 4} y1={118} x2={x + W + 4} y2={118}
+              stroke={!isReq ? c.success : c.line} strokeWidth={!isReq ? 2.5 : 1.5}
+              markerEnd="url(#http-arrow-res)"
+            />
+          </g>
+        ))}
+
+        {/* Nodes */}
+        {JOURNEY_NODES.map((node, i) => {
+          const active = i === pos;
+          return (
+            <g key={i}>
+              <rect
+                x={xs[i]} y={68} width={W} height={82} rx={14}
+                fill={active ? c.tint : c.paper}
+                stroke={active ? tokenColor : c.line}
+                strokeWidth={active ? 2.5 : 1.5}
+                strokeDasharray={active ? undefined : "5 4"}
+              />
+              <text x={xs[i] + W / 2} y={98} textAnchor="middle" fontSize={22}>
+                {node.icon}
+              </text>
+              <text x={xs[i] + W / 2} y={120} textAnchor="middle" fontSize={14} fontWeight={800} fill={active ? c.text : c.muted}>
+                {node[lang].title}
+              </text>
+              <text x={xs[i] + W / 2} y={138} textAnchor="middle" fontSize={11} fill={c.muted}>
+                {node[lang].sub}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* Moving data token */}
+        <g
+          className="http-token"
+          style={{
+            transform: `translate(${xs[pos] + W / 2}px, 36px)`,
+            transition: "transform 0.7s ease",
+          }}
+        >
+          <circle r={19} fill={c.paper} stroke={tokenColor} strokeWidth={2.5} />
+          <text textAnchor="middle" dominantBaseline="central" fontSize={18}>
+            📨
+          </text>
+          <text x={isReq ? 30 : -30} textAnchor="middle" dominantBaseline="central" fontSize={18} fontWeight={800} fill={tokenColor}>
+            {isReq ? "→" : "←"}
+          </text>
+        </g>
+
+        {/* Legend */}
+        <text x={5} y={186} fontSize={12} fontWeight={700} fill={c.primary}>
+          → {ui.legendRequest}
+        </text>
+        <text x={110} y={186} fontSize={12} fontWeight={700} fill={c.success}>
+          ← {ui.legendResponse}
+        </text>
+        <text x={755} y={186} textAnchor="end" fontSize={11} fill={c.muted}>
+          {easyUi.journeyHint}
+        </text>
+      </svg>
+    </Box>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Nested layers: frame ⊃ IP ⊃ TCP ⊃ TLS ⊃ HTTP                       */
+/* ------------------------------------------------------------------ */
+
+function NestedLayers({
   layer,
   mode,
   lang,
@@ -837,151 +199,503 @@ function LayersProgress({
   mode: "wrap" | "unwrap";
   lang: Lang;
 }) {
-  const lesson = HTTP_UI[lang];
-  const current = LAYER_RANK[layer];
+  const ui = HTTP_UI[lang];
+  const easyUi = EASY_UI[lang];
   const theme = useTheme();
-  const physical = layer === "physical";
+  const current = LAYER_RANK[layer];
 
-  const statusFor = (rank: number) => {
-    if (mode === "wrap") {
-      if (rank < current) return "added";
-      if (rank === current || (physical && rank === 5)) return "current";
-      return "next";
-    }
-
-    if (rank > current) return "removed";
-    if (rank === current) return "current";
-    return "inside";
+  const statusText = (rank: number, present: boolean) => {
+    if (present && rank === current) return ui.layerCurrent;
+    if (present) return mode === "wrap" ? ui.layerAdded : ui.layerInside;
+    return mode === "wrap" ? ui.layerNext : ui.layerRemoved;
   };
 
-  const labelFor = (status: string) => {
-    if (status === "current") return lesson.layerCurrent;
-    if (status === "added") return lesson.layerAdded;
-    if (status === "removed") return lesson.layerRemoved;
-    if (status === "inside") return lesson.layerInside;
-    return lesson.layerNext;
+  const renderLayer = (rank: number): ReactElement => {
+    const key = LAYER_BY_RANK[rank] as LayerKey;
+    const color = layerColor(theme, key);
+    const present = rank <= current;
+    const isCurrent = present && rank === current;
+
+    return (
+      <Box
+        sx={{
+          p: 1,
+          borderRadius: 1.5,
+          border: "1.5px solid",
+          borderStyle: present ? "solid" : "dashed",
+          borderColor: present ? alpha(color, isCurrent ? 1 : 0.55) : "divider",
+          bgcolor: present ? alpha(color, isCurrent ? 0.16 : 0.06) : "transparent",
+          opacity: present ? 1 : 0.55,
+        }}
+      >
+        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1} sx={{ mb: rank > 1 ? 0.8 : 0 }}>
+          <Typography sx={{ fontSize: 13, fontWeight: 800 }}>{ui[key]}</Typography>
+          <Typography sx={{ fontSize: 11, fontWeight: 800, color: present ? color : "text.disabled" }}>
+            {statusText(rank, present)}
+          </Typography>
+        </Stack>
+        {rank > 1 && renderLayer(rank - 1)}
+      </Box>
+    );
   };
 
   return (
-    <>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        justifyContent="space-between"
-        gap={1}
-        sx={{ mb: 0.7 }}
-      >
-        <Typography
-          sx={{
-            fontSize: 12,
-            fontWeight: 900,
-            letterSpacing: 0.5,
-            textTransform: "uppercase",
-            color: "text.secondary",
-          }}
-        >
-          📦 {lesson.tabLayers}
+    <Box>
+      <Typography sx={{ fontSize: 15, fontWeight: 800, mb: 0.3 }}>📦 {ui.tabLayers}</Typography>
+      <Typography sx={{ fontSize: 13, color: "text.secondary", mb: 1.2 }}>
+        {mode === "wrap" ? ui.layersHintWrap : ui.layersHintUnwrap}
+      </Typography>
+
+      {renderLayer(5)}
+
+      {layer === "none" && (
+        <Typography sx={{ fontSize: 12.5, color: "text.secondary", mt: 1 }}>{easyUi.noLayer}</Typography>
+      )}
+      {layer === "physical" && (
+        <Typography sx={{ fontSize: 12.5, color: "text.secondary", mt: 1 }}>{ui.physicalNote}</Typography>
+      )}
+    </Box>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Flow diagram (boxes with arrows)                                   */
+/* ------------------------------------------------------------------ */
+
+function FlowDiagram({ items, icons }: { items: string[]; icons: string[] }) {
+  return (
+    <Box
+      sx={{
+        display: "grid",
+        gap: 1,
+        gridTemplateColumns: { xs: "1fr", sm: `repeat(${items.length}, minmax(0, 1fr))` },
+      }}
+    >
+      {items.map((text, index) => {
+        const [heading, ...sub] = text.split("\n");
+        return (
+          <Box key={`${heading}-${index}`} sx={{ position: "relative" }}>
+            <Box
+              sx={{
+                height: "100%",
+                p: 1.4,
+                textAlign: "center",
+                borderRadius: 2,
+                border: "1.5px solid",
+                borderColor: "divider",
+                bgcolor: "background.paper",
+              }}
+            >
+              <Typography aria-hidden sx={{ fontSize: 26, lineHeight: 1.2, mb: 0.4 }}>
+                {icons[index]}
+              </Typography>
+              <Typography sx={{ fontSize: 14, fontWeight: 800, lineHeight: 1.35, overflowWrap: "anywhere" }}>
+                {heading}
+              </Typography>
+              {sub.length > 0 && (
+                <Typography sx={{ fontSize: 12.5, color: "text.secondary", lineHeight: 1.5, whiteSpace: "pre-line", mt: 0.3 }}>
+                  {sub.join("\n")}
+                </Typography>
+              )}
+            </Box>
+            {index < items.length - 1 && (
+              <ArrowForwardRoundedIcon
+                aria-hidden
+                sx={{
+                  position: "absolute",
+                  color: "primary.main",
+                  fontSize: 20,
+                  bgcolor: "background.paper",
+                  borderRadius: "50%",
+                  zIndex: 1,
+                  right: { xs: "50%", sm: -15 },
+                  bottom: { xs: -17, sm: "auto" },
+                  top: { xs: "auto", sm: "50%" },
+                  transform: { xs: "translateX(50%) rotate(90deg)", sm: "translateY(-50%)" },
+                  display: { xs: "block", sm: "block" },
+                }}
+              />
+            )}
+          </Box>
+        );
+      })}
+    </Box>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main lesson                                                        */
+/* ------------------------------------------------------------------ */
+
+export default function HttpRequestResponse({ lang }: { lang: Lang }) {
+  const [stepIndex, setStepIndex] = useState(0);
+  const ui = HTTP_UI[lang];
+  const easyUi = EASY_UI[lang];
+  const step = HTTP_STEPS[stepIndex];
+  const easy = HTTP_EASY[step.id];
+  const last = HTTP_STEPS.length - 1;
+
+  const go = (i: number) => setStepIndex(Math.min(last, Math.max(0, i)));
+
+  const known = useMemo(
+    () =>
+      HTTP_STEPS.slice(0, stepIndex + 1).reduce<ConnectionReveal>(
+        (acc, item) => ({ ...acc, ...item.reveal }),
+        {}
+      ),
+    [stepIndex]
+  );
+
+  const join = (ip?: string, port?: string) =>
+    ip ? `${ip}${port ? `:${port}` : ""}` : port ? `:${port}` : undefined;
+
+  const facts: [string, string | undefined][] = [
+    [ui.domain, known.domain],
+    [ui.protocol, known.protocol],
+    [ui.source, join(known.sourceIp, known.sourcePort)],
+    [ui.destination, join(known.destIp, known.destPort)],
+    [ui.status, known.status],
+  ];
+
+  const directionLabel = step.direction === "request" ? ui.requestLabel : ui.responseLabel;
+
+  const sectionTitle = (text: string) => (
+    <Typography sx={{ fontSize: 15, fontWeight: 800, mb: 0.8 }}>{text}</Typography>
+  );
+
+  return (
+    <Stack spacing={2.2} sx={{ width: "100%" }}>
+      {/* Heading */}
+      <Box>
+        <Typography variant="subtitle2" sx={{ color: "primary.main", mb: 0.5 }}>
+          {ui.lessonTitle}
         </Typography>
-        <Typography sx={{ fontSize: 11, color: "text.secondary" }}>
-          {mode === "wrap" ? lesson.layersHintWrap : lesson.layersHintUnwrap}
+        <Typography component="h1" variant="h1" sx={{ letterSpacing: "-0.6px", mb: 0.6 }}>
+          {easyUi.heroTitle}
+        </Typography>
+        <Typography variant="body1" sx={{ color: "text.secondary", lineHeight: 1.6 }}>
+          {ui.lessonSubtitle}
+        </Typography>
+      </Box>
+
+      {/* Step count */}
+      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
+        <Stack direction="row" gap={0.8}>
+          <Chip
+            label={step.direction === "request" ? ui.legendRequest : ui.legendResponse}
+            size="small"
+            sx={{
+              bgcolor: step.direction === "request" ? "primary.main" : "success.main",
+              color: "#fff",
+              typography: "caption",
+              fontWeight: 800,
+            }}
+          />
+        </Stack>
+        <Typography variant="body2" sx={{ color: "text.secondary", fontWeight: 700 }}>
+          {ui.stepWord} {stepIndex + 1} / {HTTP_STEPS.length}
         </Typography>
       </Stack>
 
-      <Box
+      {/* Clickable segmented progress */}
+      <Stack direction="row" gap={0.4}>
+        {HTTP_STEPS.map((s, i) => (
+          <Box
+            key={s.id}
+            component="button"
+            type="button"
+            aria-label={`${ui.stepWord} ${i + 1}: ${s.title[lang]}`}
+            aria-current={i === stepIndex ? "step" : undefined}
+            onClick={() => go(i)}
+            sx={{
+              flex: 1,
+              height: 8,
+              p: 0,
+              border: 0,
+              borderRadius: 99,
+              cursor: "pointer",
+              bgcolor:
+                i <= stepIndex
+                  ? s.direction === "request"
+                    ? "primary.main"
+                    : "success.main"
+                  : "action.hover",
+              opacity: i < stepIndex ? 0.55 : 1,
+              outline: i === stepIndex ? "2px solid" : "none",
+              outlineColor: "text.primary",
+              outlineOffset: 2,
+              "&:focus-visible": { outline: "2px solid", outlineColor: "text.primary", outlineOffset: 2 },
+            }}
+          />
+        ))}
+      </Stack>
+
+      {/* Journey diagram + what we know so far */}
+      <Paper variant="outlined" sx={{ p: { xs: 1.4, sm: 2 }, borderRadius: 2.5 }}>
+        <JourneyDiagram pos={easy?.pos ?? step.node} direction={step.direction} lang={lang} />
+
+        {facts.some(([, v]) => v) && (
+          <Box sx={{ mt: 1.4 }}>
+            <Typography sx={{ fontSize: 13, fontWeight: 800, mb: 0.7 }}>{ui.known}</Typography>
+            <Stack direction="row" gap={0.8} flexWrap="wrap">
+              {facts.map(([label, value]) =>
+                value ? (
+                  <Chip
+                    key={label}
+                    size="small"
+                    label={`${label}: ${value}`}
+                    sx={{ fontWeight: 700, bgcolor: "action.hover", fontFamily: mono, maxWidth: "100%" }}
+                  />
+                ) : null
+              )}
+            </Stack>
+          </Box>
+        )}
+      </Paper>
+
+      {/* Step card */}
+      <Paper
+        variant="outlined"
         sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", sm: "repeat(5, minmax(0, 1fr))" },
-          gap: 0.8,
+          p: { xs: 1.7, sm: 2.4 },
+          borderRadius: 2.5,
+          borderTop: "4px solid",
+          borderTopColor: step.direction === "request" ? "primary.main" : "success.main",
         }}
       >
-        {LAYER_KEYS.map((key, index) => {
-          const rank = index + 1;
-          const status = statusFor(rank);
-          const active = status === "current";
-          const color = getLayerColor(theme, key);
+        <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1} sx={{ mb: 1.2 }}>
+          <Typography variant="caption" sx={{ color: "primary.main", fontWeight: 850, letterSpacing: 0.8, textTransform: "uppercase" }}>
+            {ui.stepWord} {stepIndex + 1}
+          </Typography>
+          <Chip
+            label={step.phase[lang]}
+            size="small"
+            sx={{ bgcolor: "action.selected", color: "primary.main", typography: "caption", fontWeight: 850, maxWidth: "65%" }}
+          />
+        </Stack>
 
-          return (
-            <Box
-              key={key}
-              sx={{
-                minWidth: 0,
-                px: 0.8,
-                py: 0.7,
-                borderRadius: 1,
-                border: "1px solid",
-                borderColor:
-                  active || status === "added" || status === "removed"
-                    ? alpha(color, active ? 0.8 : 0.35)
-                    : "divider",
-                bgcolor:
-                  active
-                    ? alpha(color, 0.12)
-                    : status === "added" || status === "removed"
-                      ? alpha(color, 0.05)
-                      : "background.paper",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              {active && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 3,
-                    bgcolor: color,
-                  }}
-                />
-              )}
-
-              <Stack direction="row" alignItems="center" gap={0.7}>
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    bgcolor:
-                      status === "next"
-                        ? "action.disabled"
-                        : color,
-                    flexShrink: 0,
-                  }}
-                />
-                <Typography
-                  sx={{
-                    fontSize: 10.5,
-                    fontWeight: active ? 900 : 700,
-                    color: active ? "text.primary" : "text.secondary",
-                    lineHeight: 1.35,
-                  }}
-                >
-                  {lesson[key]}
-                </Typography>
-              </Stack>
-
-              <Typography
-                sx={{
-                  mt: 0.3,
-                  pl: 1.4,
-                  fontSize: 9,
-                  fontWeight: 800,
-                  color: active ? color : "text.disabled",
-                }}
-              >
-                {labelFor(status)}
-              </Typography>
-            </Box>
-          );
-        })}
-      </Box>
-
-      {physical && (
-        <Typography sx={{ fontSize: 10.5, color: "text.secondary", mt: 1 }}>
-          {lesson.physicalNote}
+        <Typography component="h2" variant="h3" sx={{ fontWeight: 850, mb: 1 }}>
+          {step.title[lang]}
         </Typography>
-      )}
-    </>
+
+        {/* Simple words */}
+        <Box
+          sx={{
+            p: 1.5,
+            mb: 1.6,
+            borderRadius: 2,
+            bgcolor: (t) => alpha(t.palette.primary.main, 0.07),
+            borderLeft: "4px solid",
+            borderLeftColor: "primary.main",
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 800, color: "primary.main", mb: 0.4 }}>
+            {easyUi.simpleWords}
+          </Typography>
+          <Typography sx={{ fontSize: 16, lineHeight: 1.7, fontWeight: 600 }}>
+            {easy ? easy.easy[lang] : step.plain[lang]}
+          </Typography>
+        </Box>
+
+        {/* Why */}
+        <Box
+          sx={{
+            p: 1.3,
+            mb: 1.8,
+            borderRadius: 2,
+            bgcolor: (t) => alpha(t.palette.info.main, 0.08),
+            borderLeft: "4px solid",
+            borderLeftColor: "info.main",
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 800, color: "info.main", mb: 0.3 }}>{ui.why}</Typography>
+          <Typography sx={{ fontSize: 14.5, lineHeight: 1.65 }}>{step.why[lang]}</Typography>
+        </Box>
+
+        {/* What happens */}
+        {easy && (
+          <Box sx={{ mb: 2 }}>
+            {sectionTitle(easyUi.whatHappens)}
+            <Stack spacing={0.8}>
+              {easy.steps.map((s, i) => (
+                <Stack key={i} direction="row" gap={1.2} alignItems="flex-start">
+                  <Box
+                    sx={{
+                      minWidth: 26,
+                      height: 26,
+                      borderRadius: "50%",
+                      display: "grid",
+                      placeItems: "center",
+                      fontSize: 13,
+                      fontWeight: 800,
+                      color: "#fff",
+                      bgcolor: step.direction === "request" ? "primary.main" : "success.main",
+                    }}
+                  >
+                    {i + 1}
+                  </Box>
+                  <Typography sx={{ fontSize: 15, lineHeight: 1.65, pt: 0.1 }}>{s[lang]}</Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </Box>
+        )}
+
+        {/* Diagram */}
+        <Box sx={{ mb: 2 }}>
+          {sectionTitle(ui.diagramLabel)}
+          <FlowDiagram items={step.items.map((it) => it[lang])} icons={step.icons} />
+        </Box>
+
+        {/* Nested layers */}
+        <Box sx={{ mb: 2, p: 1.4, borderRadius: 2, bgcolor: "action.hover" }}>
+          <NestedLayers layer={step.layer} mode={step.layerMode} lang={lang} />
+        </Box>
+
+        {/* Data snapshot */}
+        <Box sx={{ mb: 2 }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1} sx={{ mb: 0.8 }}>
+            <Typography sx={{ fontSize: 15, fontWeight: 800 }}>{ui.dataLabel}</Typography>
+            <Chip size="small" variant="outlined" label={directionLabel} sx={{ fontWeight: 700 }} />
+          </Stack>
+          <Box
+            component="pre"
+            sx={{
+              m: 0,
+              p: 1.4,
+              borderRadius: 2,
+              bgcolor: "action.hover",
+              whiteSpace: "pre-wrap",
+              overflowWrap: "anywhere",
+              fontFamily: mono,
+              fontSize: 13,
+              lineHeight: 1.7,
+            }}
+          >
+            {step.packet}
+          </Box>
+          <Typography sx={{ fontSize: 12.5, color: "text.secondary", mt: 0.6 }}>{ui.snapshotNote}</Typography>
+        </Box>
+
+        {/* Look inside */}
+        {step.fields && (
+          <Box sx={{ mb: 2 }}>
+            {sectionTitle("🔬")}
+            <Box sx={{ display: "grid", gridTemplateColumns: "minmax(110px, auto) 1fr", gap: 0.8, columnGap: 2 }}>
+              {step.fields.map(([key, value]) => (
+                <Box key={key} sx={{ display: "contents" }}>
+                  <Typography sx={{ fontSize: 14, fontWeight: 800 }}>{key}</Typography>
+                  <Typography sx={{ fontSize: 14, color: "text.secondary", overflowWrap: "anywhere" }}>{value}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        {/* Analogy */}
+        <Box
+          sx={{
+            p: 1.4,
+            mb: 1.6,
+            borderRadius: 2,
+            bgcolor: "action.hover",
+            borderLeft: "4px solid",
+            borderLeftColor: "secondary.main",
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 800, color: "secondary.main", mb: 0.3 }}>
+            💭 {ui.tabAnalogy}
+          </Typography>
+          <Typography sx={{ fontSize: 14.5, lineHeight: 1.65 }}>{step.analogy[lang]}</Typography>
+        </Box>
+
+        {/* Key words */}
+        <Box sx={{ mb: 1.6 }}>
+          {sectionTitle(`🧠 ${easyUi.keyWords}`)}
+          <Stack spacing={0.8}>
+            {step.terms.map(([term, meaning]) => (
+              <Box key={term} sx={{ p: 1.1, borderRadius: 2, border: "1.5px dashed", borderColor: "divider" }}>
+                <Typography sx={{ fontSize: 14, lineHeight: 1.6 }}>
+                  <Box component="span" sx={{ fontFamily: mono, fontWeight: 800, color: "primary.main" }}>
+                    {term}
+                  </Box>
+                  {" — "}
+                  {meaning[lang]}
+                </Typography>
+              </Box>
+            ))}
+          </Stack>
+        </Box>
+
+        {/* Key takeaway */}
+        <Box
+          sx={{
+            p: 1.4,
+            mb: 1.6,
+            borderRadius: 2,
+            bgcolor: (t) => alpha(t.palette.warning.main, 0.1),
+            borderLeft: "4px solid",
+            borderLeftColor: "warning.main",
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 800, color: "warning.main", mb: 0.3 }}>
+            💡 {ui.keyTakeaway}
+          </Typography>
+          <Typography sx={{ fontSize: 15, lineHeight: 1.6, fontWeight: 700 }}>{step.remember[lang]}</Typography>
+        </Box>
+
+        {/* Technical details */}
+        <Accordion
+          disableGutters
+          elevation={0}
+          sx={{ border: "1px solid", borderColor: "divider", borderRadius: "8px !important", "&:before": { display: "none" } }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreRoundedIcon />}>
+            <Typography sx={{ fontWeight: 800, fontSize: 14.5 }}>🔎 {easyUi.technical}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography sx={{ fontSize: 14, lineHeight: 1.75, color: "text.secondary" }}>
+              {step.detail[lang]}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </Paper>
+
+      {/* Navigation */}
+      <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<ArrowBackRoundedIcon />}
+          disabled={stepIndex === 0}
+          onClick={() => go(stepIndex - 1)}
+          sx={{ textTransform: "none", borderRadius: 2 }}
+        >
+          {ui.previous}
+        </Button>
+
+        <Button
+          variant="text"
+          size="small"
+          color="inherit"
+          startIcon={<ReplayRoundedIcon />}
+          onClick={() => go(0)}
+          sx={{ textTransform: "none" }}
+        >
+          {ui.restart}
+        </Button>
+
+        <Button
+          variant="contained"
+          size="small"
+          endIcon={<ArrowForwardRoundedIcon />}
+          disabled={stepIndex === last}
+          onClick={() => go(stepIndex + 1)}
+          sx={{ textTransform: "none", borderRadius: 2, boxShadow: "none" }}
+        >
+          {ui.next}
+        </Button>
+      </Stack>
+    </Stack>
   );
 }
