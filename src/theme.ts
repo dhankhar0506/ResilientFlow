@@ -1,4 +1,10 @@
+/**
+ * theme.ts – ONE place for everything about the look of the app: colors,
+ * theme presets, light/dark mode, typography mapping, MUI component defaults
+ * and saving the user's choice. (Sizes live in src/config/design.ts.)
+ */
 import { alpha, createTheme, type ThemeOptions } from "@mui/material/styles";
+import { FONT, FONT_FAMILY, RADIUS, ROOT_FONT_SIZE, SIZE } from "./config/design";
 
 export type Mode = "light" | "dark";
 export type ThemeName =
@@ -65,7 +71,6 @@ const PRESETS: Record<ThemeName, Preset> = {
     },
   },
 
-
   ember: {
     label: "Ember",
     light: {
@@ -130,7 +135,6 @@ const PRESETS: Record<ThemeName, Preset> = {
     },
   },
 
-
   forest: {
     label: "Forest",
     light: {
@@ -162,7 +166,6 @@ const PRESETS: Record<ThemeName, Preset> = {
       secondary: "#e5bd70",
     },
   },
-
 
   ocean: {
     label: "Ocean",
@@ -229,9 +232,7 @@ const PRESETS: Record<ThemeName, Preset> = {
   },
 };
 
-export const THEME_LIST = (
-  Object.keys(PRESETS) as ThemeName[]
-).map((id) => ({
+export const THEME_LIST = (Object.keys(PRESETS) as ThemeName[]).map((id) => ({
   id,
   label: PRESETS[id].label,
 }));
@@ -254,84 +255,30 @@ export function getSwatch(name: ThemeName, mode: Mode) {
 
 const shared: ThemeOptions = {
   typography: {
-    fontFamily:
-      'Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+    fontFamily: FONT_FAMILY.sans,
 
-    fontSize: 11,
+    h1: { fontSize: FONT.h1, fontWeight: 750, lineHeight: 1.25, letterSpacing: "-0.5px" },
+    h2: { fontSize: FONT.h2, fontWeight: 700, lineHeight: 1.3 },
+    h3: { fontSize: FONT.h3, fontWeight: 700, lineHeight: 1.35 },
+    h4: { fontSize: FONT.h4, fontWeight: 700, lineHeight: 1.4 },
+    h5: { fontSize: FONT.h5, fontWeight: 700 },
+    h6: { fontSize: FONT.h6, fontWeight: 700 },
 
-    h1: {
-      fontSize: "1.1rem", 
-      fontWeight: 700,
-      lineHeight: 1.3,
-    },
+    subtitle1: { fontSize: FONT.lead, fontWeight: 600, lineHeight: 1.4 },
+    subtitle2: { fontSize: FONT.small, fontWeight: 700, lineHeight: 1.4 },
 
-    h2: {
-      fontSize: "1rem", 
-      fontWeight: 700,
-      lineHeight: 1.35,
-    },
+    body1: { fontSize: FONT.body, lineHeight: 1.6 },
+    body2: { fontSize: FONT.small, lineHeight: 1.55 },
 
-    h3: {
-      fontSize: "0.9rem",
-      fontWeight: 700,
-      lineHeight: 1.4,
-    },
+    caption: { fontSize: FONT.caption, lineHeight: 1.4 },
 
-    h4: {
-      fontSize: "0.85rem", 
-      fontWeight: 700,
-    },
-
-    h5: {
-      fontSize: "0.8rem", 
-      fontWeight: 700,
-    },
-
-    h6: {
-      fontSize: "0.75rem", 
-      fontWeight: 700,
-    },
-
-    body1: {
-      fontSize: "0.75rem", 
-      lineHeight: 1.45,
-    },
-
-    body2: {
-      fontSize: "0.6875rem", 
-      lineHeight: 1.45,
-    },
-
-    subtitle1: {
-      fontSize: "0.75rem",
-      fontWeight: 600,
-    },
-
-    subtitle2: {
-      fontSize: "0.6875rem",
-      fontWeight: 600,
-    },
-
-    caption: {
-      fontSize: "0.625rem", // 10px
-      lineHeight: 1.4,
-    },
-
-    button: {
-      fontSize: "0.6875rem",
-      textTransform: "none",
-      fontWeight: 600,
-    },
+    button: { fontSize: FONT.small, textTransform: "none", fontWeight: 650 },
   },
 
-  shape: {
-    borderRadius: 14,
-  },
+  shape: { borderRadius: 14 },
 };
-export function getTheme(
-  mode: Mode,
-  name: ThemeName = THEME_NAME
-) {
+
+export function getTheme(mode: Mode, name: ThemeName = THEME_NAME) {
   const dark = mode === "dark";
   const c = PRESETS[name][mode];
   const { primary } = c;
@@ -382,6 +329,11 @@ export function getTheme(
     components: {
       MuiCssBaseline: {
         styleOverrides: {
+          html: {
+            fontSize: ROOT_FONT_SIZE.xs,
+            "@media (min-width:900px)": { fontSize: ROOT_FONT_SIZE.md },
+            "@media (min-width:1536px)": { fontSize: ROOT_FONT_SIZE.xl },
+          },
           body: {
             backgroundImage: `
               radial-gradient(
@@ -396,8 +348,7 @@ export function getTheme(
               )
             `,
             backgroundAttachment: "fixed",
-            transition:
-              "background-color 0.25s ease, color 0.25s ease",
+            transition: "background-color 0.25s ease, color 0.25s ease",
           },
 
           "::selection": {
@@ -445,7 +396,7 @@ export function getTheme(
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 12,
+            borderRadius: RADIUS.button,
             fontWeight: 650,
           },
 
@@ -470,6 +421,14 @@ export function getTheme(
             borderRadius: 10,
             fontWeight: 600,
           },
+          sizeSmall: {
+            height: SIZE.chipHeight,
+          },
+          labelSmall: {
+            fontSize: FONT.caption,
+            paddingLeft: 9,
+            paddingRight: 9,
+          },
         },
       },
 
@@ -486,4 +445,27 @@ export function getTheme(
       },
     },
   });
+}
+
+/* ───────────────────────── Saved choice (mode / theme / language) ───────────────────────── */
+
+const KEYS = { theme: "resflow-theme", mode: "resflow-mode", lang: "resflow-lang" } as const;
+
+export const isMode = (v: unknown): v is Mode => v === "light" || v === "dark";
+
+export function readSetting<T>(key: keyof typeof KEYS, isValid: (v: unknown) => v is T, fallback: T): T {
+  try {
+    const value = localStorage.getItem(KEYS[key]);
+    return isValid(value) ? value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export function writeSetting(key: keyof typeof KEYS, value: string) {
+  try {
+    localStorage.setItem(KEYS[key], value);
+  } catch {
+    /* private mode / storage blocked – the choice just won't persist */
+  }
 }

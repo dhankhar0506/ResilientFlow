@@ -13,6 +13,7 @@ import {
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import { UI, type Lang } from "../../../i18n";
+import { LessonHeader, LessonPage, LessonStatus, MONO, RADIUS, cardSx, accentCardSx } from "../../../shared/lessonKit";
 import {
     DEFINITIONS,
     DEFINITIONS_LABELS,
@@ -85,54 +86,13 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
     };
 
     return (
-        <Stack spacing={2.3}>
-            {/* Header */}
-            <Box>
-                <Typography
-                    variant="subtitle2"
-                    sx={{ color: "primary.main", mb: 0.5 }}
-                >
-                    {l.lessonTitle}
-                </Typography>
+        <LessonPage>
+            <LessonHeader eyebrow={l.lessonTitle} title={l.heroTitle} subtitle={l.heroSubtitle} />
 
-                <Typography
-                    component="h1"
-                    variant="h1"
-                    sx={{ letterSpacing: "-0.6px", mb: 0.6 }}
-                >
-                    {l.heroTitle}
-                </Typography>
-
-                <Typography variant="body1" color="text.secondary">
-                    {l.heroSubtitle}
-                </Typography>
-            </Box>
-
-            {/* Available terms */}
-            <Stack
-                direction="row"
-                alignItems="center"
-                justifyContent="space-between"
-                gap={1}
-            >
-                <Chip
-                    label={t.available}
-                    size="small"
-                    sx={{
-                        bgcolor: "success.main",
-                        color: "#fff",
-                        fontWeight: 800,
-                    }}
-                />
-
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ fontWeight: 700 }}
-                >
-                    {filtered.length} / {DEFINITIONS.length} {l.terms}
-                </Typography>
-            </Stack>
+            <LessonStatus
+                availableLabel={t.available}
+                right={`${filtered.length} / ${DEFINITIONS.length} ${l.terms}`}
+            />
 
             {/* Search */}
             <TextField
@@ -147,7 +107,7 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
                             <SearchRoundedIcon fontSize="small" />
                         </InputAdornment>
                     ),
-                    sx: { borderRadius: 2.5 },
+                    sx: { borderRadius: RADIUS.inner },
                 }}
             />
 
@@ -172,7 +132,7 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
                                 sx={{
                                     fontWeight: 850,
                                     bgcolor: active ? "primary.main" : "action.selected",
-                                    color: active ? "#fff" : "primary.main",
+                                    color: active ? "primary.contrastText" : "primary.main",
                                     "&:hover": {
                                         bgcolor: active ? "primary.main" : "action.hover",
                                     },
@@ -198,12 +158,7 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
             {filtered.length === 0 && (
                 <Paper
                     variant="outlined"
-                    sx={{
-                        p: 2.2,
-                        borderRadius: 2.5,
-                        borderColor: "divider",
-                        bgcolor: "background.paper",
-                    }}
+                    sx={cardSx}
                 >
                     <Typography variant="body1" color="text.secondary">
                         {l.noResults}
@@ -211,7 +166,8 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
                 </Paper>
             )}
 
-            {/* Definition cards */}
+            {/* Definition cards – 1 column on phones, 2 on laptops, 3 on wide screens */}
+            <Box sx={{ display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", md: "repeat(2, minmax(0, 1fr))", xl: "repeat(3, minmax(0, 1fr))" }, alignItems: "start" }}>
             {filtered.map((item) => {
                 const content = item[lang];
                 const open = openIds.includes(item.id);
@@ -220,14 +176,7 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
                     <Paper
                         key={item.id}
                         variant="outlined"
-                        sx={{
-                            p: { xs: 1.7, sm: 2.2 },
-                            borderRadius: 2.5,
-                            borderColor: "divider",
-                            borderTop: "4px solid",
-                            borderTopColor: "primary.main",
-                            bgcolor: "background.paper",
-                        }}
+                        sx={accentCardSx()}
                     >
                         {/* Term and category */}
                         <Stack
@@ -315,7 +264,7 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
                                             overflowX: "auto",
                                             bgcolor: "action.hover",
                                             color: "secondary.main",
-                                            fontFamily: "ui-monospace, Menlo, monospace",
+                                            fontFamily: MONO,
                                             typography: "caption",
                                             lineHeight: 1.6,
                                         }}
@@ -328,6 +277,7 @@ export default function NetworkDefinitions({ lang }: { lang: Lang }) {
                     </Paper>
                 );
             })}
-        </Stack>
+            </Box>
+        </LessonPage>
     );
 }

@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Box, ButtonBase, IconButton, Popover, Stack, Tooltip, Typography } from "@mui/material";
 import PaletteRoundedIcon from "@mui/icons-material/PaletteRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { THEME_LIST, getSwatch, type Mode, type ThemeName } from "./theme";
 import type { Lang } from "./i18n";
+import { FONT, RADIUS, SIZE } from "./config/design";
 
 interface ThemePickerProps {
   themeName: ThemeName;
@@ -28,9 +28,9 @@ export default function ThemePicker({ themeName, mode, lang, onChange }: ThemePi
         <IconButton
           aria-label={text.tooltip}
           onClick={(e) => setAnchorEl(e.currentTarget)}
-          sx={{ border: "1px solid", borderColor: "divider", bgcolor: "background.paper", borderRadius: 999 }}
+          sx={{ border: "1px solid", borderColor: "divider", bgcolor: "background.paper", borderRadius: RADIUS.pill }}
         >
-          <PaletteRoundedIcon sx={{ fontSize: 18 }} />
+          <PaletteRoundedIcon sx={{ fontSize: SIZE.icon.md }} />
         </IconButton>
       </Tooltip>
 
@@ -41,10 +41,10 @@ export default function ThemePicker({ themeName, mode, lang, onChange }: ThemePi
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
         slotProps={{
-          paper: { sx: { p: 2, mt: 1, borderRadius: 3, width: 300, border: "1px solid", borderColor: "divider" } },
+          paper: { sx: { p: 2, mt: 1, borderRadius: 3, width: SIZE.themePopoverWidth, border: "1px solid", borderColor: "divider" } },
         }}
       >
-        <Typography sx={{ fontSize: 13, fontWeight: 800, mb: 1.4 }}>{text.title}</Typography>
+        <Typography sx={{ fontSize: FONT.small, fontWeight: 800, mb: 1.4 }}>{text.title}</Typography>
 
         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 1.2 }}>
           {THEME_LIST.map(({ id, label }) => {
@@ -85,8 +85,8 @@ export default function ThemePicker({ themeName, mode, lang, onChange }: ThemePi
                   justifyContent="space-between"
                   sx={{ px: 1.1, py: 0.7, bgcolor: "background.paper" }}
                 >
-                  <Typography sx={{ fontSize: 12, fontWeight: 800, color: "text.primary" }}>{label}</Typography>
-                  {selected && <CheckRoundedIcon sx={{ fontSize: 16, color: "primary.main" }} />}
+                  <Typography sx={{ fontSize: FONT.caption, fontWeight: 800, color: "text.primary" }}>{label}</Typography>
+                  {selected && <CheckRoundedIcon sx={{ fontSize: FONT.lead, color: "primary.main" }} />}
                 </Stack>
               </ButtonBase>
             );

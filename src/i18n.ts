@@ -19,6 +19,13 @@ export const UI = {
     previous: "Previous",
     restart: "Restart",
     next: "Next step",
+    nextLesson: "Next lesson",
+    lessonsHeading: "Lessons",
+    networkingTitle: "Networking",
+    networkingSubtitle: "Pick a lesson to start. Every lesson is a short step-by-step visual walkthrough.",
+    switchToLight: "Switch to light",
+    switchToDark: "Switch to dark",
+    openLessons: "Show lessons",
   },
   hi: {
     appName: "ResilientFlow",
@@ -31,19 +38,26 @@ export const UI = {
     comingSoon: "Jald aayega",
     heroTitle: "Jaano computer aur software asal mein kaise kaam karte hain",
     heroSubtitle:
-      "Ek React frontend aapke laptop se ek Node.js backend ko AWS pe call karta hai. Request jis-jis layer se guzarti hai woh dekho, aur response wapas aate hue follow karo.",
+      "Concepts ko step by step samjho — visual explanations aur interactive simulations ke saath, sirf definitions nahi.",
     categoriesHeading: "Explore karne ke liye ek topic chuno",
     stepLabel: "Step",
     of: "ka",
     previous: "Peeche",
     restart: "Phir se shuru",
     next: "Agla step",
+    nextLesson: "Agla lesson",
+    lessonsHeading: "Lessons",
+    networkingTitle: "Networking",
+    networkingSubtitle: "Shuru karne ke liye ek lesson chuno. Har lesson ek chhota step-by-step visual walkthrough hai.",
+    switchToLight: "Light mode lagao",
+    switchToDark: "Dark mode lagao",
+    openLessons: "Lessons dikhao",
   },
 } as const;
 
 export const CATEGORIES = [
   {
-    id: "http",
+    id: "networking",
     icon: "🌐",
     available: true,
     title: { en: "Networking", hi: "Networking" },
@@ -162,9 +176,21 @@ export const NETWORK_LESSONS = [
     available: true,
     label: "Network Address Translation (NAT)",
   },
-  { id: "DNSLookup", icon: "🔎", available: true, label: "DNS lookup" },
+  { id: "dns", icon: "🔎", available: true, label: "DNS lookup" },
   { id: "packet", icon: "📦", available: false, label: "Packet journey" },
-  { id: "arp", icon: "🏷️", available: false, label: "ARP & MAC addresses" },
+  { id: "arp-mac", icon: "🏷️", available: false, label: "ARP & MAC addresses" },
   { id: "tcp", icon: "🤝", available: false, label: "TCP · TLS · HTTP" },
-  { id: "subnet", icon: "🧮", available: false, label: "IP & subnetting" },
+  { id: "ip-subnetting", icon: "🧮", available: false, label: "IP & subnetting" },
+];
+
+export type NetworkLesson = (typeof NETWORK_LESSONS)[number];
+
+export const MORE_TOPICS = [
+  { icon: "💻", label: "Computer Fundamentals" },
+  { icon: "⚙️", label: "Operating Systems" },
+  { icon: "🧩", label: "Programming & Runtime" },
+  { icon: "🕸️", label: "Web & Browser" },
+  { icon: "🛠️", label: "Backend & APIs" },
+  { icon: "🗄️", label: "Databases" },
+  { icon: "☁️", label: "Cloud & DevOps" },
 ];
