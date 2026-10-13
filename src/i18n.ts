@@ -145,18 +145,22 @@ export const NETWORK_LESSONS = [
   { id: "ip-structure", icon: "🔢", available: true, label: "IP address structure" },
   { id: "host-cidr", icon: "🧮", available: true, label: "Network, Host & CIDR" },
   { id: "subnet", icon: "🎭", available: true, label: "Subnet mask" },
+  { id: "subnetting", icon: "✂️", available: true, label: "Subnetting" },
   {
     id: "default-gateway",
     icon: "🚪",
     available: true,
     label: "Default Gateway",
   },
+  { id: "dhcp", icon: "📨", available: true, label: "DHCP (automatic IP)" },
   {
     id: "mac-address",
     icon: "🏷️",
     available: true,
     label: "MAC Address Basics",
   },
+  { id: "switching", icon: "🔀", available: true, label: "Hub vs Switch" },
+  { id: "vlan", icon: "🏢", available: true, label: "VLANs" },
   {
     id: "arp",
     icon: "🔄",
@@ -164,6 +168,10 @@ export const NETWORK_LESSONS = [
     label: "Address Resolution Protocol (ARP)",
   },
   { id: "osi", icon: "🧱", available: true, label: "OSI & TCP/IP layers" },
+  { id: "ports", icon: "🔌", available: true, label: "Ports & Sockets" },
+  { id: "tcp", icon: "🤝", available: true, label: "TCP handshake & reliability" },
+  { id: "udp", icon: "⚡", available: true, label: "TCP vs UDP" },
+  { id: "icmp", icon: "📡", available: true, label: "Ping & Traceroute (ICMP)" },
   {
     id: "routing",
     icon: "🌐",
@@ -176,11 +184,11 @@ export const NETWORK_LESSONS = [
     available: true,
     label: "Network Address Translation (NAT)",
   },
+  { id: "ipv6", icon: "6️⃣", available: true, label: "IPv6" },
   { id: "dns", icon: "🔎", available: true, label: "DNS lookup" },
-  { id: "packet", icon: "📦", available: false, label: "Packet journey" },
-  { id: "arp-mac", icon: "🏷️", available: false, label: "ARP & MAC addresses" },
-  { id: "tcp", icon: "🤝", available: false, label: "TCP · TLS · HTTP" },
-  { id: "ip-subnetting", icon: "🧮", available: false, label: "IP & subnetting" },
+  { id: "tls", icon: "🔒", available: true, label: "HTTPS & TLS" },
+  { id: "firewall", icon: "🧱", available: true, label: "Firewalls" },
+  { id: "lb-cdn", icon: "⚖️", available: true, label: "Proxy, Load Balancer & CDN" },
 ];
 
 export type NetworkLesson = (typeof NETWORK_LESSONS)[number];
